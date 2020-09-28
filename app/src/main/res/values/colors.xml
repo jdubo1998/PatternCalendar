@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#aaaaaa</color>
+    <color name="colorPrimaryDark">#333333</color>
+    <color name="colorAccent">#03DAC5</color>
+    <color name="background">#ffffff</color>
+
+<!--    <color name="focusedDate"></color>-->
+<!--    <color name="unfocusedDate"></color>-->
+
+    <color name="focusedDateDark">#ffffff</color>
+<!--    <color name="unfocusedDateDark">#</color>-->
+
+</resources>

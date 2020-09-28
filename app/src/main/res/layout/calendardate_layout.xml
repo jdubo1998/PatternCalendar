@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:background="@color/background">
+
+    <TextView
+        android:id="@+id/calendar_day"
+        android:layout_width="35dp"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:textAlignment="center"
+        android:textColor="#999999"
+        android:textSize="27sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+            <TextView
+                android:id="@+id/ptrn0_icon"
+                android:layout_width="8dp"
+                android:layout_height="wrap_content"
+                android:textSize="9sp"/>
+            <TextView
+                android:id="@+id/ptrn1_icon"
+                android:layout_width="8dp"
+                android:layout_height="wrap_content"
+                android:textSize="9sp"/>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+            <TextView
+                android:id="@+id/ptrn2_icon"
+                android:layout_width="8dp"
+                android:layout_height="wrap_content"
+                android:textSize="9sp"/>
+            <TextView
+                android:id="@+id/ptrn3_icon"
+                android:layout_width="8dp"
+                android:layout_height="wrap_content"
+                android:textSize="9sp"/>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+            <TextView
+                android:id="@+id/ptrn4_icon"
+                android:layout_width="8dp"
+                android:layout_height="wrap_content"
+                android:textSize="9sp"/>
+            <TextView
+                android:id="@+id/ptrn5_icon"
+                android:layout_width="8dp"
+                android:layout_height="wrap_content"
+                android:textSize="9sp"/>
+
+        </LinearLayout>
+    </LinearLayout>
+
+</LinearLayout>

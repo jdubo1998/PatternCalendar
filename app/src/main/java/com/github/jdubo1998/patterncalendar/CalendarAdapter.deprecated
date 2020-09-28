@@ -1,0 +1,248 @@
+package com.example.personalplanner.ui.main;
+
+import android.content.Context;
+import android.graphics.Color;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.BaseAdapter;
+import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.TextView;
+
+import com.example.personalplanner.R;
+
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Locale;
+
+public class CalendarAdapter extends BaseAdapter {
+    private Context context;
+    private LayoutInflater inflater;
+    private final Calendar calendar = Calendar.getInstance(Locale.ENGLISH); // Main calendar to iterate through dates.
+    private final Calendar REF_DATE = Calendar.getInstance(Locale.ENGLISH);
+    private final Calendar today = Calendar.getInstance(Locale.ENGLISH);
+    private int offset;
+    private int targetMonth;
+    private String workoutType;
+
+    public CalendarAdapter(Context context) {
+        this.context = context;
+        REF_DATE.set(2019, 3, 10);
+        calendar.set(Calendar.DAY_OF_MONTH, 1);
+        reload();
+    }
+
+    @Override
+    public int getCount() {
+        return 42;
+    }
+
+    @Override
+    public Object getItem(int position) {
+        return null;
+    }
+
+    @Override
+    public long getItemId(int position) {
+        return 0;
+    }
+
+    @Override
+    public View getView(int position, View convertView, ViewGroup parent) {
+        if (inflater == null) {
+            inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        }
+
+        if (convertView == null) {
+            convertView = inflater.inflate(R.layout.date_calendar, null);
+        }
+
+        TextView calendar_day = (TextView) convertView.findViewById(R.id.calendar_day);
+
+        TextView ptrn1_icon = (TextView) convertView.findViewById(R.id.ptrn1_icon);
+        TextView ptrn2_icon = (TextView) convertView.findViewById(R.id.ptrn2_icon);
+        TextView ptrn3_icon = (TextView) convertView.findViewById(R.id.ptrn3_icon);
+        TextView ptrn4_icon = (TextView) convertView.findViewById(R.id.ptrn4_icon);
+        TextView ptrn5_icon = (TextView) convertView.findViewById(R.id.ptrn5_icon);
+        TextView ptrn6_icon = (TextView) convertView.findViewById(R.id.ptrn6_icon);
+        TextView ptrn1_label = (TextView) convertView.findViewById(R.id.ptrn1_label);
+        TextView ptrn2_label = (TextView) convertView.findViewById(R.id.ptrn2_label);
+        TextView ptrn3_label = (TextView) convertView.findViewById(R.id.ptrn3_label);
+        TextView ptrn4_label = (TextView) convertView.findViewById(R.id.ptrn4_label);
+        TextView ptrn5_label = (TextView) convertView.findViewById(R.id.ptrn5_label);
+        TextView ptrn6_label = (TextView) convertView.findViewById(R.id.ptrn6_label);
+
+//        ImageView applock_icon = convertView.findViewById(R.id.applock_indicator);
+//        applock_icon.setImageResource(R.drawable.empty);
+//        ImageView drink_icon = convertView.findViewById(R.id.drink_indicator);
+//        drink_icon.setImageResource(R.drawable.empty);
+//        ImageView workout_icon = convertView.findViewById(R.id.workout_indicator);
+//        workout_icon.setImageResource(R.drawable.empty);
+
+//        TextView drink_text = parent.getRootView().findViewById(R.id.drink_text);
+//        TextView workout_text = parent.getRootView().findViewById(R.id.workout_text);
+//        TextView applock_text = parent.getRootView().findViewById(R.id.applock_text);
+
+        calendar.add(Calendar.DATE, -offset+position);
+
+        /* ---   calendar is equal to the correct date.   --- */
+        long days = (calendar.getTime().getTime() - REF_DATE.getTime().getTime()) / (1000*60*60*24);
+        int date = calendar.get(Calendar.DATE);
+//        System.out.println(new SimpleDateFormat("MM/dd").format(calendar.getTime()) + " (" + days + ")");
+//        boolean isToday = (today.compareTo(calendar) == 0);
+        boolean isToday = new SimpleDateFormat("MM/dd/YYYY").format(calendar.getTime()).equals(new SimpleDateFormat("MM/dd/YYYY").format(today.getTime()));
+        calendar_day.setText("" + date);
+
+        /* Color for today calendar. (Red) */
+        if (isToday) {
+            calendar_day.setTextColor(Color.rgb(255, 0, 0));
+            /* Calendar day within month. (Black) */
+        } else if (calendar.get(Calendar.MONTH) == targetMonth) {
+            calendar_day.setTextColor(Color.rgb(0, 0, 0));
+            /* Calendar day outside month. (Gray) */
+        } else {
+            calendar_day.setTextColor(Color.rgb(153, 153, 153));
+        }
+
+
+//        if (workout_text.getText().equals("Workout: Error") && new SimpleDateFormat("MM/dd/YYYY").format(calendar.getTime()).equals("06/23/2020")) {
+//            System.out.println("Calendar to Today: " + calendar.compareTo(today));
+//            System.out.println("Today to Calendar: " + today.compareTo(calendar));
+//            System.out.println("New : " + new SimpleDateFormat("MM/dd/YYYY").format(calendar.getTime()).equals(new SimpleDateFormat("MM/dd/YYYY").format(today.getTime())));
+//            System.out.println("Date Iterated: " + new SimpleDateFormat("MM/dd/YYYY").format(calendar.getTime()));
+//            System.out.println("Calendar   : " + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSSS").format(calendar.getTime()));
+//            System.out.println("Today      : " + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSSS").format(calendar.getTime()));
+//            System.out.println(today.compareTo(calendar));
+//            System.out.println(".");
+//        }
+
+        calendar.add(Calendar.DATE, -(-offset+position));
+        return convertView;
+    }
+
+    public String getMonthYear() {
+        return new SimpleDateFormat("MMMM yyyy").format(calendar.getTime());
+    }
+
+    // TODO: Remove
+    public String getWorkoutType() {
+        if (workoutType != null) {
+            return workoutType;
+        } else {
+            return "ERROR";
+        }
+    }
+
+    public void prevMonth() {
+        if (calendar.get(Calendar.MONTH) == 0) {
+            calendar.roll(Calendar.YEAR, -1);
+        }
+        calendar.roll(Calendar.MONTH, -1);
+        reload();
+    }
+
+    public void nextMonth() {
+        if (calendar.get(Calendar.MONTH) == 11) {
+            calendar.roll(Calendar.YEAR, 1);
+        }
+        calendar.roll(Calendar.MONTH, 1);
+        reload();
+    }
+
+    private void reload() {
+        offset = calendar.get(Calendar.DAY_OF_WEEK)-1;
+        targetMonth = calendar.get(Calendar.MONTH);
+    }
+
+    private ArrayList<Pattern> extractPatterns(String patterns) {
+        ArrayList<Pattern> Patterns = new ArrayList<Pattern>();
+
+        for (String pattern : patterns.split(";;;")) {
+            Patterns.add(new Pattern(pattern));
+        }
+
+        return Patterns;
+    }
+}
+
+/**
+ * Used to create a Pattern object, which holds all the necessary<br>
+ * attributes for a pattern in the personal planner.
+ *
+ * @author J.B. DuBois
+ */
+class Pattern {
+    private final int[] CODES;
+    private final String[] LABELS;
+    private final String[] ICONS;
+    public final int length;
+    private String color = "#000000";
+    private String name = "";
+
+    public Pattern(String pattern) {
+        String codes = pattern.split(";;")[0];
+        LABELS = pattern.split(";;")[1].split(";");
+        ICONS = pattern.split(";;")[2].split(";");
+
+        /* Converts the code string into an array of integers. */
+        CODES = new int[codes.length()];
+        for (int i = 0; i < codes.length(); i++) {
+            CODES[i] = Integer.parseInt(""+codes.charAt(i));
+        }
+
+        length = CODES.length;
+    }
+
+    /* Gets the code that is referenced at the index. */
+    public int getCode(int index) {
+        return CODES[index % length];
+    }
+
+    /* Gets the label referenced at the index. */
+    public String getLabel(int index) {
+        return LABELS[CODES[index % length]];
+    }
+
+    /* Gets the icon referenced at the index. */
+    public String getIcon(int index) {
+        return ICONS[CODES[index % length]];
+    }
+
+    /* Used to se the pattern name. */
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    /* Returns the pattern name. */
+    public String getName() {
+        return this.name;
+    }
+
+    public void setColor(String color){
+        this.color = color;
+    }
+
+    public String getColor() {
+        return this.color;
+    }
+
+    /* Returns the pattern in the form: CODE;;LABELS;;ICONS */
+    public String exportPattern() {
+        String pattern = "";
+
+        for (int code : CODES) {
+            pattern = pattern + code;
+        }
+        pattern = pattern + ";;";
+        for (String label : LABELS) {
+            pattern = pattern + label + ";";
+        }
+        for (String icon : ICONS) {
+            pattern = pattern + ";" + icon;
+        }
+
+        return pattern;
+    }
+}

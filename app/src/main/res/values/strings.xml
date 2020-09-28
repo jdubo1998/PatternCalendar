@@ -1,0 +1,20 @@
+<resources>
+    <string name="app_name">PatternCalendar</string>
+
+    <string name="sunday_label">SUN</string>
+    <string name="monday_label">MON</string>
+    <string name="tuesday_label">TUE</string>
+    <string name="wednesday_label">WED</string>
+    <string name="thursday_label">THU</string>
+    <string name="friday_label">FRI</string>
+    <string name="saturday_label">SAT</string>
+
+    <string name="prevMonth_contentDescription">Shows the previous month in the calendar.</string>
+    <string name="nextMonth_contentDescription">Shows the next month in the calendar.</string>
+
+    <string name="settings_contentDescription">Edit the settings. (Temporary button for the pattern manager.)</string>
+
+    <string name="inc_btn">+</string>
+    <string name="dec_btn">-</string>
+    <string name="numDays_label">Days: </string>
+</resources>
