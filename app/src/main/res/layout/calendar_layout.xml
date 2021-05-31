@@ -14,9 +14,9 @@
             android:src="@android:drawable/ic_media_play"
             android:contentDescription="@string/prevMonth_contentDescription"
             android:layout_weight="1"
-            android:rotation="180" />
+            android:rotation="180"/>
         <TextView
-            android:id="@+id/month_year_display"
+            android:id="@+id/monthyear_text"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
@@ -30,7 +30,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:contentDescription="@string/nextMonth_contentDescription"
-            android:src="@android:drawable/ic_media_play" />
+            android:src="@android:drawable/ic_media_play"/>
     </LinearLayout>
 
     <LinearLayout
@@ -107,76 +107,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:numColumns="7"
-        android:background="#000000"
         android:horizontalSpacing="1dp"
         android:verticalSpacing="1dp"
-        android:paddingTop="1dp"
-        android:paddingBottom="1dp"/>
-
-    <ScrollView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:padding="10dp">
-    </ScrollView>
-    
-<!--    <ExpandableListView-->
-<!--        android:layout_width="match_parent"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        />-->
-
-<!--    <TextView-->
-<!--        android:id="@+id/ptrn1_label"-->
-<!--        android:layout_width="match_parent"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:textSize="30sp"-->
-<!--        android:gravity="start"-->
-<!--        android:textStyle="bold"-->
-<!--        android:paddingStart="10dp"-->
-<!--        android:paddingEnd="10dp"/>-->
-<!--    <TextView-->
-<!--        android:id="@+id/ptrn2_label"-->
-<!--        android:layout_width="match_parent"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:textSize="30sp"-->
-<!--        android:gravity="start"-->
-<!--        android:textStyle="bold"-->
-<!--        android:paddingStart="10dp"-->
-<!--        android:paddingEnd="10dp"/>-->
-<!--    <TextView-->
-<!--        android:id="@+id/ptrn3_label"-->
-<!--        android:layout_width="match_parent"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:textSize="30sp"-->
-<!--        android:gravity="start"-->
-<!--        android:textStyle="bold"-->
-<!--        android:paddingStart="10dp"-->
-<!--        android:paddingEnd="10dp"/>-->
-<!--    <TextView-->
-<!--        android:id="@+id/ptrn4_label"-->
-<!--        android:layout_width="match_parent"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:textSize="30sp"-->
-<!--        android:gravity="start"-->
-<!--        android:textStyle="bold"-->
-<!--        android:paddingStart="10dp"-->
-<!--        android:paddingEnd="10dp"/>-->
-<!--    <TextView-->
-<!--        android:id="@+id/ptrn5_label"-->
-<!--        android:layout_width="match_parent"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:textSize="30sp"-->
-<!--        android:gravity="start"-->
-<!--        android:textStyle="bold"-->
-<!--        android:paddingStart="10dp"-->
-<!--        android:paddingEnd="10dp"/>-->
-<!--    <TextView-->
-<!--        android:id="@+id/ptrn6_label"-->
-<!--        android:layout_width="match_parent"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:textSize="30sp"-->
-<!--        android:gravity="start"-->
-<!--        android:textStyle="bold"-->
-<!--        android:paddingStart="10dp"-->
-<!--        android:paddingEnd="10dp"/>-->
-    
+        android:background="#000000"/>
 </LinearLayout>

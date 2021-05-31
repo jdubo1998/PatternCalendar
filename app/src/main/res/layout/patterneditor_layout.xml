@@ -1,57 +1,129 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:gravity="bottom"
-    android:visibility="invisible">
-    <RelativeLayout
+    android:orientation="vertical">
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:padding="10dp">
-        <EditText
-            android:layout_width="250dp"
+        android:orientation="horizontal">
+        <TextView
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true"/>
-        <ImageButton
-            android:id="@+id/TEST_exitEditMode"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:layout_centerVertical="true"
-            android:layout_alignParentEnd="true"
-            android:src="@android:drawable/checkbox_on_background"/>
-    </RelativeLayout>
-        
+            android:layout_weight="1"
+            android:paddingStart="5dp"
+            android:paddingEnd="0dp"
+            android:textSize="20sp"
+            android:text="Name:"/>
+        <EditText
+            android:id="@+id/patternname_edittext"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="4"
+            android:paddingStart="0dp"
+            android:paddingEnd="5dp"
+            android:textSize="20sp"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:paddingStart="5dp"
+            android:paddingEnd="0dp"
+            android:textSize="20sp"
+            android:text="Start Date:"/>
+        <EditText
+            android:id="@+id/startdate_edittext"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="2"
+            android:textSize="20sp"/>
+    </LinearLayout>
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:padding="10dp">
+        android:padding="5dp">
+
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:textSize="25sp"
+            android:textSize="20sp"
             android:gravity="center"
+            android:layout_marginStart="0dp"
+            android:layout_marginEnd="20dp"
             android:text="@string/numDays_label"/>
+
         <Button
+            android:id="@+id/decrementdays_button"
             android:layout_width="40dp"
-            android:layout_height="match_parent"
-            android:text="@string/inc_btn"/>
-        <TextView
+            android:layout_height="wrap_content"
+            android:text="@string/dec_btn"/>
+
+        <EditText
+            android:id="@+id/numberofdays_text"
             android:layout_width="70dp"
             android:layout_height="match_parent"
-            android:textSize="30sp"
+            android:textSize="20sp"
             android:textAlignment="center"
             android:gravity="center"/>
+
         <Button
+            android:id="@+id/incrementdays_button"
             android:layout_width="40dp"
-            android:layout_height="match_parent"
-            android:text="@string/dec_btn"/>
+            android:layout_height="wrap_content"
+            android:text="@string/inc_btn"/>
     </LinearLayout>
 
-    <ScrollView
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="200dp"
-        android:padding="10dp">
-    </ScrollView>
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="0dp"
+            android:layout_marginEnd="20dp"
+            android:textSize="20sp"
+            android:text="Active:"/>
+
+        <CheckBox
+            android:id="@+id/active_checkbox"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
+<!--        <TextView-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_marginStart="0dp"-->
+<!--            android:layout_marginEnd="20dp"-->
+<!--            android:textSize="20sp"-->
+<!--            android:text="Active:"/>-->
+
+<!--        <CheckBox-->
+<!--            android:id="@+id/active_checkbox"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"/>-->
+    </LinearLayout>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="20sp"
+        android:text="Labels:"/>
+
+    <ListView
+        android:id="@+id/labels_list"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingStart="5dp"
+        android:paddingEnd="5dp"/>
 </LinearLayout>

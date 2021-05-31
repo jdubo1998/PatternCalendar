@@ -1,67 +1,94 @@
 package com.github.jdubo1998.patterncalendar;
 
-import android.content.Context;
 import android.os.Bundle;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.ImageButton;
+import android.widget.CheckBox;
+import android.widget.EditText;
+import android.widget.ListView;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
 
 public class PatternEditorFragment extends Fragment {
-    private PatternEditorFragmentListener listener;
-    private boolean editMode = false;
+    SharedViewModel mViewModel;
+    private Pattern mEditPattern;
+//    private int mPatternIndex;
+//    private int mNumberOfDays = 0;
 
-    public interface PatternEditorFragmentListener {
-        void exitEdit();
+    public PatternEditorFragment() {
+        super(R.layout.patterneditor_layout);
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {super.onCreate(savedInstanceState);}
+    public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
+        mViewModel = new ViewModelProvider(requireActivity()).get(SharedViewModel.class);
 
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.patterneditor_layout, container, false);
-    }
+        final EditText patternNameEditText = view.findViewById(R.id.patternname_edittext);
+        final EditText startDateEditText = view.findViewById(R.id.startdate_edittext); // TODO: better method to get date.
+        Button incrementDaysButton = view.findViewById(R.id.incrementdays_button);
+        Button decrementDaysButton = view.findViewById(R.id.decrementdays_button);
+        final EditText numberOfDays = view.findViewById(R.id.numberofdays_text);
+        // TODO: Add color changing functionality.
+        final CheckBox activeCheckBox = view.findViewById(R.id.active_checkbox);
 
-    @Override
-    public void onViewCreated(View view, Bundle savedInstanceState) {
-        ImageButton exitEditMode = view.findViewById(R.id.TEST_exitEditMode);
-        exitEditMode.setOnClickListener(new View.OnClickListener() {
+        ListView labelsList = view.findViewById(R.id.labels_list);
+        LabelsListAdapter adapter = new LabelsListAdapter(PatternsManager.getLabels());
+        labelsList.setAdapter(adapter);
+
+        /* Attach listeners and observers. */
+        mViewModel.getEditPattern().observe(getViewLifecycleOwner(), new Observer<Pattern>() {
             @Override
-            public void onClick(View v) {
-                listener.exitEdit();
+            public void onChanged(Pattern pattern) {
+                mEditPattern = pattern;
+                startDateEditText.setText(mEditPattern.startDate().toString("MM/dd/yy"));
+                patternNameEditText.setText(mEditPattern.name);
+                numberOfDays.setText("" + mEditPattern.length());
+                activeCheckBox.setActivated(mEditPattern.isActive);
             }
         });
-    }
 
-    @Override
-    public void onAttach(@NonNull Context context) {
-        super.onAttach(context);
+//        mViewModel.getPatternIndex().observe(getViewLifecycleOwner(), new Observer<Integer>() {
+//            @Override
+//            public void onChanged(Integer integer) {
+//                mPatternIndex = integer;
+//                Pattern pattern = PatternsManager.getPattern(mPatternIndex);
+//
+//                startDateEditText.setText(pattern.getDate());
+//
+//                patternNameEditText.setText(pattern.name);
+//
+//                mNumberOfDays = pattern.length();
+//                numberOfDays.setText("" + mNumberOfDays);
+//
+//                activeCheckBox.setActivated(pattern.isActive);
+//            }
+//        });
 
-        if (context instanceof PatternEditorFragmentListener) {
-            listener = (PatternEditorFragmentListener) context;
-        } else {
-            throw new RuntimeException("ERROR: PatternEditorFragmentListener not implemented");
-        }
-    }
+        incrementDaysButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+//                mNumberOfDays++;
+                mEditPattern.incrementLength();
+                numberOfDays.setText("" + mEditPattern.length());
+                mViewModel.setEditPattern(mEditPattern);
+//                mViewModel.setPatternLength(mNumberOfDays);
+            }
+        });
 
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        listener = null;
-    }
-
-    public void enterEditMode() {
-        editMode = true;
-        getView().setVisibility(View.VISIBLE);
-    }
-
-    public void exitEditMode() {
-        editMode = true;
-        getView().setVisibility(View.INVISIBLE);
+        decrementDaysButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (mEditPattern.length() > 0) {
+                    mEditPattern.decrementLength();
+//                    mNumberOfDays--;
+                    numberOfDays.setText("" + mEditPattern.length());
+                    mViewModel.setEditPattern(mEditPattern);
+//                    mViewModel.setPatternLength(mNumberOfDays);
+                }
+            }
+        });
     }
 }

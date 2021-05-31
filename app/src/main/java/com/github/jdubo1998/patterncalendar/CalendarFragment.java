@@ -1,33 +1,39 @@
 package com.github.jdubo1998.patterncalendar;
 
-import android.content.Context;
 import android.os.Bundle;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.GridView;
-import android.widget.LinearLayout;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
 
 import org.joda.time.DateTime;
-
-import java.util.ArrayList;
+import org.joda.time.Days;
+import org.joda.time.LocalDate;
+import org.joda.time.Months;
 
 public class CalendarFragment extends Fragment {
-    private static int[] dates = new int[42];
+    public static final String TAG = CalendarFragment.class.getSimpleName();
+    TextView monthYearText;
+    private LocalDate mDate;
+    private SharedViewModel mViewModel;
+    private static int[] mDaysOfMonth = new int[42];
+    private int mToday_dayOfMonth = -1;
+    int curMonthOffset = 0;
+//    private boolean editMode = false;
+    private CalendarAdapter mAdapter;
 
-    private CalendarFragmentListener listener;
-    private GridView calendarGridView;
-    boolean curMonth = true;
-    private final DateTime today = DateTime.now();
-    private boolean editMode = false;
+    private Pattern mEditPattern;
+//    private int mPatternLength;
+//    private String mEditPatternName = null;
 
-    public interface CalendarFragmentListener {
-        void enterEditMode();
+    public CalendarFragment() {
+        super(R.layout.calendar_layout);
     }
 
     @Override
@@ -36,103 +42,123 @@ public class CalendarFragment extends Fragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.calendar_layout, container, false);
-    }
+    public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
 
-    @Override
-    public void onViewCreated(View view, Bundle savedInstanceState) {
-        /*---   Date calculations.    ---*/
-//        DateTime today = this.today.plusDays(2); // TODO: Remove this testing line.
-        int offset = (today.getDayOfWeek() - (today.getDayOfMonth()%7)+8)%7 - 1; // Number of days in the previous month.
-        DateTime start = today.minusDays(today.getDayOfMonth() + offset); // DateTime of the first date in the calendar. (previous month)
-        PatternContainer.REFDATES(start);
-        final int todayDate = (curMonth) ? today.getDayOfMonth() : -1;
-//        DateTime refDate = today.minusDays(today.getDayOfMonth()-1).minusMonths(2); // Reference date for when the pattern beings. // TODO: Delete this.
-//        int daysStart = Days.daysBetween(refDate.toLocalDate(), start.toLocalDate()).getDays(); // TODO: Delete this.
+        mViewModel = new ViewModelProvider(requireActivity()).get(SharedViewModel.class);
 
-//        TextView[] ptrn_labels = new TextView[]{view.findViewById(R.id.ptrn1_label), view.findViewById(R.id.ptrn2_label),
-//                view.findViewById(R.id.ptrn3_label), view.findViewById(R.id.ptrn4_label),
-//                view.findViewById(R.id.ptrn5_label), view.findViewById(R.id.ptrn6_label)};
+        final ImageButton nextMonth = view.findViewById(R.id.next_month);
+        final ImageButton prevMonth = view.findViewById(R.id.prev_month);
+        monthYearText = view.findViewById(R.id.monthyear_text);
+
+        mDate = DateTime.now().toLocalDate();
+//        mAdapter = new CalendarAdapter(mDaysOfMonths, PatternsManager.getIcons(), PatternsManager.getColors(), mToday_dayOfMonth);
+        mAdapter = new CalendarAdapter();
+
+        /*---   Initialize calendar to today.    ---*/
+        mToday_dayOfMonth = mDate.getDayOfMonth();
+        updateDaysOfMonths(mDate);
 
         /*---   Calendar initialization.   ---*/
-        calendarGridView = view.findViewById(R.id.calendar_gridView);
-        final CalendarAdapter adapter = new CalendarAdapter(todayDate);
-        calendarGridView.setAdapter(adapter);
+        GridView calendarGrid = view.findViewById(R.id.calendar_gridView);
+        calendarGrid.setAdapter(mAdapter);
 
-        ArrayList<LinearLayout> patternList = new ArrayList<>();
-
-        for (int i = 0; i < PatternContainer.count(); i++) {
-            patternList.add(new LinearLayout(getContext()));
-            patternList.get(0).child;
-        }
-
-//        if (editMode) {
-//        } else {
-//        }
-//
-//        /*---   Adds touch functionality to the dates in the calendar.   ---*/
-//        calendarGridView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
-//            @Override
-//            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-//                listener.enterEditMode();
-//                return true;
-//            }
-//        });
-
-        calendarGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        /* Attach observers and listeners. */
+        mViewModel.getEditPattern().observe(getViewLifecycleOwner(), new Observer<Pattern>() {
             @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                if (editMode) {
-                }
+            public void onChanged(Pattern pattern) {
+                if (pattern == null) {
+//                    editMode = false;
+                    nextMonth.setVisibility(View.VISIBLE);
+                    prevMonth.setVisibility(View.VISIBLE);
 
-//                adapter.updateEditMode();
-                calendarGridView.invalidateViews();
+                    mEditPattern = null;
+//                    mEditPatternName = null;
+                    updateDaysOfMonths(DateTime.now().toLocalDate());
+                    mAdapter.updateEditPattern(-1, -1);
+                } else {
+//                    editMode = true;
+                    nextMonth.setVisibility(View.INVISIBLE);
+                    prevMonth.setVisibility(View.INVISIBLE);
+
+                    mEditPattern = pattern;
+                    curMonthOffset += Months.monthsBetween(mDate, pattern.startDate()).getMonths();
+                    mDate = pattern.startDate();
+                    updateDaysOfMonths(mDate);
+                    mAdapter.updateEditPattern(pattern.startDate().getDayOfMonth(), pattern.length());
+                }
             }
         });
 
+        nextMonth.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                curMonthOffset++;
+                mDate = mDate.plusMonths(1);
+                updateDaysOfMonths(mDate);
+            }
+        });
+
+        prevMonth.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                curMonthOffset--;
+                mDate = mDate.minusMonths(1);
+                updateDaysOfMonths(mDate);
+            }
+        });
+
+        calendarGrid.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                if (mEditPattern == null) {
+                    mAdapter.updateTargetDayOfMonth(position);
+                    mViewModel.setDayOffset(position);
+                } else {
+                    int date = mDaysOfMonth[position];
+                    int startDate = mEditPattern.startDate().getDayOfMonth();
+
+                    if (date >= startDate && date < (startDate + mEditPattern.length())) {
+                        mEditPattern.cyclePatternIcon((date - startDate) % mEditPattern.length());
+                    }
+
+                    mViewModel.setEditPattern(mEditPattern);
+                }
+            }
+        });
+    }
+
+    private void updateDaysOfMonths(LocalDate date) {
+        String patternName = null;
+
+        monthYearText.setText(date.toString("MMMM yyyy"));
+        int today_DayOfMonth = -1;
+
+        int offset = (date.getDayOfWeek() - (date.getDayOfMonth()%7)+8)%7 - 1; // Number of days from previous month to fill at beginning of calendar.
+        LocalDate firstDate = date.minusDays(date.getDayOfMonth() + offset); // DateTime of the first date for the calendar.
         for (int i = 0; i < 42; i++) {
-            dates[i] = start.plusDays(i).getDayOfMonth();
+            mDaysOfMonth[i] = firstDate.plusDays(i).getDayOfMonth();
+//            if (i > 7 && mDaysOfMonth[i] == 1) {
+//                endMonth = i-1;
+//            }
         }
 
-        /*---   Sets the labels.   ---*/
-        String[] labels = PatternContainer.getLabels(today.getDayOfMonth() + offset);
-        String[] names = PatternContainer.getNames();
-        int[] colors = PatternContainer.getColors();
-
-        for (int i = 0; i < PatternContainer.count(); i++) {
-            String label = names[i] + ": " + labels[i];
-//            ptrn_labels[i].setText(label);
-//            ptrn_labels[i].setTextColor(colors[i]);
+        /* If the target current month is the month of today. Then set mToday_dayOfMonth, so that is shows up as red. */
+        if (curMonthOffset == 0) {
+            today_DayOfMonth = mToday_dayOfMonth;
         }
-    }
 
-    @Override
-    public void onAttach(@NonNull Context context) {
-        super.onAttach(context);
-
-        if (context instanceof CalendarFragmentListener) {
-            listener = (CalendarFragmentListener) context;
+        /* If edit mode is active, only show icons for the pattern being edited. */
+        if (mEditPattern != null) {
+            patternName = mEditPattern.name;
+            int startPattern = Days.daysBetween(firstDate, mEditPattern.startDate()).getDays();
+            int endPattern = startPattern + mEditPattern.length() - 1;
         } else {
-            throw new RuntimeException("ERROR: CalendarFragmentListener not implemented.");
+            int startMonth = Days.daysBetween(firstDate, mEditPattern.startDate()).getDays();
+            int endMonth = startMonth + mEditPattern.length() - 1;
+            int today = Days.daysBetween(firstDate, DateTime.now().toLocalDate()).getDays();
         }
-    }
 
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        listener = null;
-    }
-
-    public void enterEditMode() {
-        editMode = true;
-    }
-
-    public void exitEditMode() {
-        editMode = false;
-    }
-
-    public static int getDate(int position) {
-        return dates[position];
+        mAdapter.updateMonth(mDaysOfMonth, PatternsManager.getIcons(patternName), PatternsManager.getColors(), today_DayOfMonth);
     }
 }
