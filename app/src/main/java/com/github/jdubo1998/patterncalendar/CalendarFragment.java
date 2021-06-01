@@ -18,7 +18,7 @@ import org.joda.time.LocalDate;
 import org.joda.time.Months;
 
 public class CalendarFragment extends Fragment {
-    public static final String TAG = CalendarFragment.class.getSimpleName();
+//    public static final String TAG = CalendarFragment.class.getSimpleName();
     TextView monthYearText;
     private LocalDate mDate;
     private SharedViewModel mViewModel;
@@ -57,7 +57,8 @@ public class CalendarFragment extends Fragment {
 
         /*---   Initialize calendar to today.    ---*/
         mToday_dayOfMonth = mDate.getDayOfMonth();
-        updateDaysOfMonths(mDate);
+        updateCalendar(mDate);
+        mAdapter.updatePatterns(PatternsManager.getIcons(), PatternsManager.getColors());
 
         /*---   Calendar initialization.   ---*/
         GridView calendarGrid = view.findViewById(R.id.calendar_gridView);
@@ -68,14 +69,11 @@ public class CalendarFragment extends Fragment {
             @Override
             public void onChanged(Pattern pattern) {
                 if (pattern == null) {
-//                    editMode = false;
                     nextMonth.setVisibility(View.VISIBLE);
                     prevMonth.setVisibility(View.VISIBLE);
 
                     mEditPattern = null;
-//                    mEditPatternName = null;
-                    updateDaysOfMonths(DateTime.now().toLocalDate());
-                    mAdapter.updateEditPattern(-1, -1);
+                    updateCalendar(DateTime.now().toLocalDate());
                 } else {
 //                    editMode = true;
                     nextMonth.setVisibility(View.INVISIBLE);
@@ -84,8 +82,7 @@ public class CalendarFragment extends Fragment {
                     mEditPattern = pattern;
                     curMonthOffset += Months.monthsBetween(mDate, pattern.startDate()).getMonths();
                     mDate = pattern.startDate();
-                    updateDaysOfMonths(mDate);
-                    mAdapter.updateEditPattern(pattern.startDate().getDayOfMonth(), pattern.length());
+                    updateCalendar(mDate);
                 }
             }
         });
@@ -95,7 +92,7 @@ public class CalendarFragment extends Fragment {
             public void onClick(View v) {
                 curMonthOffset++;
                 mDate = mDate.plusMonths(1);
-                updateDaysOfMonths(mDate);
+                updateCalendar(mDate);
             }
         });
 
@@ -104,7 +101,7 @@ public class CalendarFragment extends Fragment {
             public void onClick(View v) {
                 curMonthOffset--;
                 mDate = mDate.minusMonths(1);
-                updateDaysOfMonths(mDate);
+                updateCalendar(mDate);
             }
         });
 
@@ -112,7 +109,6 @@ public class CalendarFragment extends Fragment {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 if (mEditPattern == null) {
-                    mAdapter.updateTargetDayOfMonth(position);
                     mViewModel.setDayOffset(position);
                 } else {
                     int date = mDaysOfMonth[position];
@@ -128,37 +124,54 @@ public class CalendarFragment extends Fragment {
         });
     }
 
-    private void updateDaysOfMonths(LocalDate date) {
-        String patternName = null;
+    private void updateCalendar(LocalDate date) {
+//        String patternName = null;
+        int endMonth = 0;
+        int[] params;
 
         monthYearText.setText(date.toString("MMMM yyyy"));
-        int today_DayOfMonth = -1;
+//        int today_DayOfMonth = -1;
 
         int offset = (date.getDayOfWeek() - (date.getDayOfMonth()%7)+8)%7 - 1; // Number of days from previous month to fill at beginning of calendar.
         LocalDate firstDate = date.minusDays(date.getDayOfMonth() + offset); // DateTime of the first date for the calendar.
         for (int i = 0; i < 42; i++) {
             mDaysOfMonth[i] = firstDate.plusDays(i).getDayOfMonth();
-//            if (i > 7 && mDaysOfMonth[i] == 1) {
-//                endMonth = i-1;
-//            }
+            if (i > 7 && mDaysOfMonth[i] == 1) {
+                endMonth = i-1;
+            }
+        }
+
+        if(Months.monthsBetween(date, LocalDate.now()).getMonths() == 0) {
+            System.out.println("Target month.");
         }
 
         /* If the target current month is the month of today. Then set mToday_dayOfMonth, so that is shows up as red. */
-        if (curMonthOffset == 0) {
-            today_DayOfMonth = mToday_dayOfMonth;
-        }
+//        if (curMonthOffset == 0) {
+//            today_DayOfMonth = mToday_dayOfMonth;
+//        }
 
         /* If edit mode is active, only show icons for the pattern being edited. */
         if (mEditPattern != null) {
-            patternName = mEditPattern.name;
+            params = new int[3];
+//            patternName = mEditPattern.name;
             int startPattern = Days.daysBetween(firstDate, mEditPattern.startDate()).getDays();
             int endPattern = startPattern + mEditPattern.length() - 1;
+
+            params[0] = 1;
+            params[1] = startPattern;
+            params[2] = endPattern;
         } else {
-            int startMonth = Days.daysBetween(firstDate, mEditPattern.startDate()).getDays();
-            int endMonth = startMonth + mEditPattern.length() - 1;
+            params = new int[4];
+            int startMonth = offset + 1;
             int today = Days.daysBetween(firstDate, DateTime.now().toLocalDate()).getDays();
+
+            params[0] = 0;
+            params[1] = startMonth;
+            params[2] = endMonth;
+            params[3] = today;
         }
 
-        mAdapter.updateMonth(mDaysOfMonth, PatternsManager.getIcons(patternName), PatternsManager.getColors(), today_DayOfMonth);
+        mAdapter.updatePatterns(PatternsManager.getIcons(), PatternsManager.getColors());
+        mAdapter.updateCalendar(mDaysOfMonth, params);
     }
 }

@@ -11,14 +11,15 @@ import android.widget.TextView;
 public class CalendarAdapter extends BaseAdapter {
     private LayoutInflater inflater;
 
-    private int today_dayOfMonth;
-    private int target_position;
+    private int mToday_dayOfMonth;
+    private int mTarget = -1;
     private int[] mDaysOfMonth;
-    private String[] icons;
-    private int[] colors;
+    private String[] mIcons;
+    private int[] mColors;
     private boolean targetMonth = false;
+    private int[] mParams;
 
-    private boolean editMode = false;
+//    private boolean editMode = false;
     private int mEditPatternStartDate = -1;
     private int mEditPatternLength = -1;
 
@@ -48,41 +49,59 @@ public class CalendarAdapter extends BaseAdapter {
 //        int date = CalendarFragment.getDate(position);
         TextView calendar_day = convertView.findViewById(R.id.calendar_day);
 
-        if (editMode) {
-            if (mDaysOfMonth[position] == 1) {
-                targetMonth = !targetMonth;
-            }
-
-            if (targetMonth && mDaysOfMonth[position] >= mEditPatternStartDate && mDaysOfMonth[position] < (mEditPatternStartDate + mEditPatternLength)) {
-                calendar_day.setTextColor(Color.rgb(0, 0, 0)); // Dates inside the pattern are colored black.
-            } else {
-                calendar_day.setTextColor(Color.rgb(150, 150, 150)); // Days outside of pattern are colored gray.
-            }
-        } else {
-            if (mDaysOfMonth[position] == 1) {
-                targetMonth = !targetMonth;
-            }
-
-            if (mDaysOfMonth[position] == today_dayOfMonth && (mDaysOfMonth[position] < 23 || position >= 22)) {
-                calendar_day.setTextColor(Color.rgb(255, 50, 50)); // Date of today is colored red.
-            } else if (position == target_position) {
-                calendar_day.setTextColor(Color.rgb(50, 50, 255)); // Target day and target month is colored blue.
-            } else if (targetMonth) {
+        /* Edit Mode */
+        if (mParams[0] == 1) {
+            if (mParams[1] <= position && position <= mParams[2]) {
                 calendar_day.setTextColor(Color.rgb(0, 0, 0)); // Dates inside the target month are colored black.
             } else {
                 calendar_day.setTextColor(Color.rgb(150, 150, 150)); // Dates outside of the target month are colored gray.
             }
+
+//            if (mDaysOfMonth[position] == 1) {
+//                targetMonth = !targetMonth;
+//            }
+//
+//            if (targetMonth && mDaysOfMonth[position] >= mEditPatternStartDate && mDaysOfMonth[position] < (mEditPatternStartDate + mEditPatternLength)) {
+//                calendar_day.setTextColor(Color.rgb(0, 0, 0)); // Dates inside the pattern are colored black.
+//            } else {
+//                calendar_day.setTextColor(Color.rgb(150, 150, 150)); // Days outside of pattern are colored gray.
+//            }
+        /* Pattern Viewer Mode */
+        } else {
+            if (position == mParams[3]) {
+                calendar_day.setTextColor(Color.rgb(255, 50, 50)); // Date of today is colored red.
+            } else if (position == mTarget) {
+                calendar_day.setTextColor(Color.rgb(50, 50, 255)); // Target day and target month is colored blue.
+            } else if (mParams[1] <= position && position <= mParams[2]) {
+                calendar_day.setTextColor(Color.rgb(0, 0, 0)); // Dates inside the target month are colored black.
+            } else {
+                calendar_day.setTextColor(Color.rgb(150, 150, 150)); // Dates outside of the target month are colored gray.
+            }
+
+//            if (mDaysOfMonth[position] == 1) {
+//                targetMonth = !targetMonth;
+//            }
+//
+//            if (mDaysOfMonth[position] == mToday_dayOfMonth && (mDaysOfMonth[position] < 23 || position >= 22)) {
+//                calendar_day.setTextColor(Color.rgb(255, 50, 50)); // Date of today is colored red.
+//            } else if (position == target_position) {
+//                calendar_day.setTextColor(Color.rgb(50, 50, 255)); // Target day and target month is colored blue.
+//            } else if (targetMonth) {
+//                calendar_day.setTextColor(Color.rgb(0, 0, 0)); // Dates inside the target month are colored black.
+//            } else {
+//                calendar_day.setTextColor(Color.rgb(150, 150, 150)); // Dates outside of the target month are colored gray.
+//            }
         }
 
         for (int i = 0; i < 6; i++) {
             if (mDaysOfMonth[position] >= mEditPatternStartDate) {
-                ptrn_icons[i].setText(Character.valueOf(icons[position].charAt(i)).toString());
+                ptrn_icons[i].setText(Character.valueOf(mIcons[position].charAt(i)).toString());
             } else {
                 ptrn_icons[i].setText(" ");
             }
 
-            if (i < colors.length) {
-                ptrn_icons[i].setTextColor(colors[i]);
+            if (i < mColors.length) {
+                ptrn_icons[i].setTextColor(mColors[i]);
             }
         }
 
@@ -90,26 +109,18 @@ public class CalendarAdapter extends BaseAdapter {
         return convertView;
     }
 
-    public void updateMonth(int[] dayOfMonths, String[] icons, int[] colors, int todayDayOfMonth) {
-        this.today_dayOfMonth = todayDayOfMonth;
-        this.mDaysOfMonth = dayOfMonths;
-        this.icons = icons;
-        this.colors = colors;
-        this.target_position = -1;
-
-        notifyDataSetChanged();
+    public void updateTarget (int target) {
+        mTarget = target;
     }
 
-    public void updateTargetDayOfMonth(int target_position) {
-        this.target_position = target_position;
-        notifyDataSetChanged();
+    public void updatePatterns(String[] icons, int[] colors) {
+        mIcons = icons;
+        mColors = colors;
     }
 
-    public void updateEditPattern(int editPatternStartDate, int editPatternLength) {
-        mEditPatternStartDate = editPatternStartDate;
-        mEditPatternLength = editPatternLength;
-
-        editMode = editPatternLength > 0;
+    public void updateCalendar(int[] dayOfMonth, int[] params) {
+        mDaysOfMonth = dayOfMonth;
+        mParams = params;
 
         notifyDataSetChanged();
     }

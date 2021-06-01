@@ -82,7 +82,7 @@ public class MainActivity extends AppCompatActivity {
         String workout_s = "Workout;;2340410;;None;Abs;Upper Body;Bike;Full Body;; ;A;U;B;F;;00804f;;4/4/21";
         String applock_s = "Applock;;1010010;;No;Yes;; ;A;;EBA000;;6/7/20";
         String cigar_s = "Cigar;;00000100000000;;No;Yes;; ;C;;803221;;4/11/21";
-        String ganja_s = "Ganja;;01000001000100;;No;Yes;; ;G;;00800b;;4/4/21";
+        String ganja_s = "Chill;;01000001000100;;No;Yes;; ;C;;00800b;;4/4/21";
         PatternsManager.parseCode(drink_s + ";;;" + workout_s + ";;;"  + applock_s + ";;;"  + cigar_s + ";;;"  + ganja_s);
     }
 
