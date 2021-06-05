@@ -4,11 +4,10 @@ import org.joda.time.DateTime;
 import org.joda.time.Days;
 import org.joda.time.LocalDate;
 import org.joda.time.Months;
-import org.joda.time.format.DateTimeFormat;
-import org.joda.time.format.DateTimeFormatter;
 import org.junit.Test;
 
-import static org.junit.Assert.*;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 /**
  * Example local unit test, which will execute on the development machine (host).
@@ -23,11 +22,11 @@ public class ExampleUnitTest {
 //    String cigar_s = "Cigar;;00000100000000;;No;Yes;; ;C;;803221;;4/11/21";
 //    String code = drink_s + ";;;" + workout_s + ";;;"  + applock_s + ";;;"  + cigar_s;
 
-    String code1_s = "0 to 5;;012345;;zero;one;two;three;four;five;;0;1;2;3;4;5;;000000;;4/14/21";
-    String code2_s = "Ramp Up;;001012012301234012345;;zero;one;two;three;four;five;;0;1;2;3;4;5;;000000;;5/14/21";
+    String code1_s = "0 to 5;;012345;;zero;one;two;three;four;five;;0;1;2;3;4;5;;000000;;4/14/21;;0";
+    String code2_s = "Ramp Up;;001012012301234012345;;zero;one;two;three;four;five;;0;1;2;3;4;5;;000000;;5/14/21;;0";
     String code = code1_s + ";;;" + code2_s;
 
-    Pattern mEditPattern = new Pattern(code2_s);
+    Pattern mEditPattern = new Pattern(0, code2_s, LocalDate.now());
     int[] mDaysOfMonth = new int[42];
     int curMonthOffset = 0;
 
@@ -137,7 +136,7 @@ public class ExampleUnitTest {
 
         /* If edit mode is active, only show icons for the pattern being edited. */
         if (mEditPattern != null) {
-            patternName = mEditPattern.name;
+            patternName = mEditPattern.mName;
         }
 
         PatternsManager.parseCode(code);
@@ -168,6 +167,33 @@ public class ExampleUnitTest {
             } else {
                 System.out.print("|");
             }
+        }
+    }
+
+    @Test
+    public void ArrayListSizeTest() {
+        ArrayList<Boolean> arr = new ArrayList<>();
+        arr.add(true);
+        arr.add(true);
+        System.out.println(arr.size());
+        arr.add(FooConstructor(arr.size()));
+    }
+
+    private Boolean FooConstructor(int size) {
+        System.out.println(size);
+        return false;
+    }
+
+    @Test
+    public void ArrayListSetValueTest() {
+        ArrayList<Boolean> arr = new ArrayList<>(Arrays.asList(true, true, false, true, false));
+
+        for (int i = 0; i < arr.size(); i++) {
+            arr.set(i, false);
+        }
+
+        for (Boolean i : arr) {
+            System.out.println(i);
         }
     }
 }

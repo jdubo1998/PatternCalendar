@@ -57,15 +57,6 @@ public class CalendarAdapter extends BaseAdapter {
                 calendar_day.setTextColor(Color.rgb(150, 150, 150)); // Dates outside of the target month are colored gray.
             }
 
-//            if (mDaysOfMonth[position] == 1) {
-//                targetMonth = !targetMonth;
-//            }
-//
-//            if (targetMonth && mDaysOfMonth[position] >= mEditPatternStartDate && mDaysOfMonth[position] < (mEditPatternStartDate + mEditPatternLength)) {
-//                calendar_day.setTextColor(Color.rgb(0, 0, 0)); // Dates inside the pattern are colored black.
-//            } else {
-//                calendar_day.setTextColor(Color.rgb(150, 150, 150)); // Days outside of pattern are colored gray.
-//            }
         /* Pattern Viewer Mode */
         } else {
             if (position == mParams[3]) {
@@ -77,20 +68,6 @@ public class CalendarAdapter extends BaseAdapter {
             } else {
                 calendar_day.setTextColor(Color.rgb(150, 150, 150)); // Dates outside of the target month are colored gray.
             }
-
-//            if (mDaysOfMonth[position] == 1) {
-//                targetMonth = !targetMonth;
-//            }
-//
-//            if (mDaysOfMonth[position] == mToday_dayOfMonth && (mDaysOfMonth[position] < 23 || position >= 22)) {
-//                calendar_day.setTextColor(Color.rgb(255, 50, 50)); // Date of today is colored red.
-//            } else if (position == target_position) {
-//                calendar_day.setTextColor(Color.rgb(50, 50, 255)); // Target day and target month is colored blue.
-//            } else if (targetMonth) {
-//                calendar_day.setTextColor(Color.rgb(0, 0, 0)); // Dates inside the target month are colored black.
-//            } else {
-//                calendar_day.setTextColor(Color.rgb(150, 150, 150)); // Dates outside of the target month are colored gray.
-//            }
         }
 
         for (int i = 0; i < 6; i++) {

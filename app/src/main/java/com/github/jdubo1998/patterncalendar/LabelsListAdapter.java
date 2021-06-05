@@ -17,7 +17,7 @@ public class LabelsListAdapter extends BaseAdapter {
 
     @Override
     public int getCount() {
-        return mLabels.length;
+        return mLabels.length + 1;
     }
 
     @Override
@@ -42,7 +42,11 @@ public class LabelsListAdapter extends BaseAdapter {
         }
 
         TextView patternLabelText = convertView.findViewById(R.id.patternlabel_text);
-        patternLabelText.setText(mLabels[position]);
+        if (position == mLabels.length) {
+            patternLabelText.setText("[+] Add Label");
+        } else {
+            patternLabelText.setText(mLabels[position]);
+        }
 
         return convertView;
     }

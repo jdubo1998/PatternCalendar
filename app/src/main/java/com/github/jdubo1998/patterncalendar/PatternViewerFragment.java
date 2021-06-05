@@ -1,6 +1,7 @@
 package com.github.jdubo1998.patterncalendar;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.ContextMenu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -15,6 +16,7 @@ import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
 public class PatternViewerFragment extends Fragment {
+    public static final String TAG = PatternViewerFragment.class.getSimpleName();
     SharedViewModel mViewModel;
     PatternViewerAdapter adapter;
 
@@ -43,6 +45,13 @@ public class PatternViewerFragment extends Fragment {
                 adapter.updateLabels(PatternsManager.getLabels(offset));
             }
         });
+
+        patternLabelsList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Log.d(TAG, "onClick: " + adapter.toString());
+            }
+        });
     }
 
     @Override
@@ -58,7 +67,7 @@ public class PatternViewerFragment extends Fragment {
 
         switch (item.getItemId()) {
             case R.id.active_action:
-                System.out.println("active_action");
+                Log.d(TAG, "onContextItemSelected: active_action");
                 break;
             case R.id.edit_action:
                 mViewModel.setEditPattern(PatternsManager.getPattern(info.position));
@@ -68,5 +77,11 @@ public class PatternViewerFragment extends Fragment {
         }
 
         return true;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        adapter.update(PatternsManager.getNames(), PatternsManager.getLabels(), PatternsManager.getColors());
     }
 }

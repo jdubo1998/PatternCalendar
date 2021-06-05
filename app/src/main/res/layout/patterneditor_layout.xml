@@ -14,37 +14,58 @@
             android:layout_weight="1"
             android:paddingStart="5dp"
             android:paddingEnd="0dp"
-            android:textSize="20sp"
+            android:textSize="14sp"
             android:text="Name:"/>
+
         <EditText
             android:id="@+id/patternname_edittext"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="4"
+            android:layout_weight="3"
             android:paddingStart="0dp"
             android:paddingEnd="5dp"
-            android:textSize="20sp"/>
-    </LinearLayout>
+            android:inputType="text"
+            android:textSize="14sp"/>
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
         <TextView
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:layout_gravity="center"
             android:paddingStart="5dp"
             android:paddingEnd="0dp"
-            android:textSize="20sp"
+            android:textSize="14sp"
             android:text="Start Date:"/>
+
         <EditText
             android:id="@+id/startdate_edittext"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="2"
-            android:textSize="20sp"/>
+            android:inputType="date"
+            android:textSize="14sp"/>
     </LinearLayout>
+
+<!--    <LinearLayout-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:orientation="horizontal">-->
+<!--        <TextView-->
+<!--            android:layout_width="0dp"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_weight="1"-->
+<!--            android:paddingStart="5dp"-->
+<!--            android:paddingEnd="0dp"-->
+<!--            android:textSize="14sp"-->
+<!--            android:text="Start Date:"/>-->
+<!--        <EditText-->
+<!--            android:id="@+id/startdate_edittext"-->
+<!--            android:layout_width="0dp"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_weight="2"-->
+<!--            android:inputType="date"-->
+<!--            android:textSize="14sp"/>-->
+<!--    </LinearLayout>-->
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -55,7 +76,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:textSize="20sp"
+            android:textSize="14sp"
             android:gravity="center"
             android:layout_marginStart="0dp"
             android:layout_marginEnd="20dp"
@@ -71,9 +92,10 @@
             android:id="@+id/numberofdays_text"
             android:layout_width="70dp"
             android:layout_height="match_parent"
-            android:textSize="20sp"
+            android:textSize="14sp"
             android:textAlignment="center"
-            android:gravity="center"/>
+            android:gravity="center"
+            android:inputType="number"/>
 
         <Button
             android:id="@+id/incrementdays_button"
@@ -92,32 +114,36 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="0dp"
             android:layout_marginEnd="20dp"
-            android:textSize="20sp"
-            android:text="Active:"/>
+            android:textSize="14sp"
+            android:text="Icon Visible:"/>
 
         <CheckBox
             android:id="@+id/active_checkbox"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
+            android:layout_height="wrap_content"
+            android:layout_marginStart="0dp"
+            android:layout_marginEnd="20dp"/>
 
-<!--        <TextView-->
-<!--            android:layout_width="wrap_content"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:layout_marginStart="0dp"-->
-<!--            android:layout_marginEnd="20dp"-->
-<!--            android:textSize="20sp"-->
-<!--            android:text="Active:"/>-->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="0dp"
+            android:layout_marginEnd="20dp"
+            android:textSize="14sp"
+            android:text="Archive:"/>
 
-<!--        <CheckBox-->
-<!--            android:id="@+id/active_checkbox"-->
-<!--            android:layout_width="wrap_content"-->
-<!--            android:layout_height="wrap_content"/>-->
+        <CheckBox
+            android:id="@+id/archive_checkbox"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="0dp"
+            android:layout_marginEnd="20dp"/>
     </LinearLayout>
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textSize="20sp"
+        android:textSize="14sp"
         android:text="Labels:"/>
 
     <ListView
