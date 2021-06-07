@@ -1,7 +1,6 @@
 package com.github.jdubo1998.patterncalendar;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.ContextMenu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -32,12 +31,13 @@ public class PatternViewerFragment extends Fragment {
 
         mViewModel = new ViewModelProvider(requireActivity()).get(SharedViewModel.class);
 
-        /*---   Pattern Viewer Initialization.   ---*/
+        /*---   Pattern Viewer Initialization   ---*/
         ListView patternLabelsList = view.findViewById(R.id.patterns_list); // TODO: Change naming schemes.
         adapter = new PatternViewerAdapter(PatternsManager.getNames(), PatternsManager.getLabels(), PatternsManager.getColors());
         patternLabelsList.setAdapter(adapter);
         registerForContextMenu(patternLabelsList);
 
+        /*---   Day Offset Observer   ---*/
         mViewModel.getDayOffset().observe(getViewLifecycleOwner(), new Observer<Integer>() {
             @Override
             public void onChanged(Integer integer) {
@@ -49,7 +49,12 @@ public class PatternViewerFragment extends Fragment {
         patternLabelsList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Log.d(TAG, "onClick: " + adapter.toString());
+                /* If a new pattern is clicked, it creates and adds a new empty pattern as the edit pattern. */
+                if (position == PatternsManager.getNames().length) {
+                    Pattern pattern = new Pattern(PatternsManager.getNames().length);
+                    PatternsManager.addPattern(pattern);
+                    mViewModel.setEditPattern(pattern);
+                }
             }
         });
     }
@@ -67,10 +72,23 @@ public class PatternViewerFragment extends Fragment {
 
         switch (item.getItemId()) {
             case R.id.active_action:
-                Log.d(TAG, "onContextItemSelected: active_action");
+                if (PatternsManager.getState(info.position) == Pattern.VISIBLE) {
+                    PatternsManager.setState(info.position, Pattern.INVISIBLE);
+                } else {
+                    PatternsManager.setState(info.position, Pattern.VISIBLE);
+                }
+
+                adapter.update(PatternsManager.getNames(), PatternsManager.getLabels(offset), PatternsManager.getColors());
+                mViewModel.setEditPattern(null); // TODO: Better way to update.
+//                Log.d(TAG, "onContextItemSelected: active_action");
                 break;
             case R.id.edit_action:
                 mViewModel.setEditPattern(PatternsManager.getPattern(info.position));
+                break;
+            case R.id.delete_action:
+                PatternsManager.deletePattern(info.position);
+                adapter.update(PatternsManager.getNames(), PatternsManager.getLabels(offset), PatternsManager.getColors());
+                mViewModel.setEditPattern(null); // TODO: Better way to update.
                 break;
             default:
                 return super.onContextItemSelected(item);

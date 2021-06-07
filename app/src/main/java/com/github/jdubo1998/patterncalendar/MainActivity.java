@@ -67,33 +67,11 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    // TODO: Edit how shared preferences are saved.
     public void saveSharedPreferences() {
-//        String name = "PATTERNS_PREFERENCES";
-//        SharedPreferences preferences = getSharedPreferences(name, MODE_PRIVATE);
-//        SharedPreferences.Editor editor = preferences.edit();
-//
-//        editor.putInt("count", PatternsManager.count());
-//        for (int i = 0; i < PatternsManager.count(); i++) {
-//            editor.putString("ptrn" + i, PatternsManager.generateCode(i));
-//        }
-//
-//        editor.apply();
+
     }
 
     public void loadSharedPreferences() {
-//        String name = "PATTERNS_PREFERENCES";
-//        SharedPreferences preferences = getSharedPreferences(name, MODE_PRIVATE);
-//
-//        int count = preferences.getInt("count", 0);
-//
-//        String patternCode;
-//        for (int i = 0; i < count; i++) {
-//            patternCode = preferences.getString("ptrn" + i, null);
-//            if (patternCode != null) {
-//                PatternsManager.addPattern(patternCode);
-//            }
-//        }
     }
 
     @Override
@@ -103,6 +81,7 @@ public class MainActivity extends AppCompatActivity {
 
             if (backPressTimer + TIME_INTERVAL > System.currentTimeMillis()) {
                 super.onBackPressed();
+                saveSharedPreferences();
                 return;
             } else {
                 Toast.makeText(getBaseContext(), "Tap back again to exit.", Toast.LENGTH_SHORT).show();

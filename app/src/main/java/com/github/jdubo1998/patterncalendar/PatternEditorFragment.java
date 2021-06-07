@@ -27,7 +27,7 @@ public class PatternEditorFragment extends Fragment {
     SharedViewModel mViewModel;
     private Pattern mEditPattern;
     private CheckBox mActiveCheckBox;
-    private CheckBox mAcrchiveCheckBox;
+    private CheckBox mArchiveCheckBox;
 
     public PatternEditorFragment() {
         super(R.layout.patterneditor_layout);
@@ -44,25 +44,28 @@ public class PatternEditorFragment extends Fragment {
         final EditText numberOfDaysEditText = view.findViewById(R.id.numberofdays_text);
         // TODO: Add color changing functionality.
         mActiveCheckBox = view.findViewById(R.id.active_checkbox);
-        mAcrchiveCheckBox = view.findViewById(R.id.archive_checkbox);
+        mArchiveCheckBox = view.findViewById(R.id.archive_checkbox);
 
         mEditPattern = mViewModel.getEditPattern().getValue();
         ListView labelsList = view.findViewById(R.id.labels_list);
-        LabelsListAdapter adapter = new LabelsListAdapter(mEditPattern.getLabels());
+        final LabelsListAdapter adapter = new LabelsListAdapter(mEditPattern.getLabels());
         labelsList.setAdapter(adapter);
 
         /* Attach observers and listeners. */
         mViewModel.getEditPattern().observe(getViewLifecycleOwner(), new Observer<Pattern>() {
             @Override
             public void onChanged(Pattern pattern) {
-                if (pattern != null) {
-                    mEditPattern = pattern;
+                mEditPattern = pattern;
+
+                if (mEditPattern != null) {
                     startDateEditText.setText(mEditPattern.startDate().toString("MM/dd/yy"));
                     patternNameEditText.setText(mEditPattern.mName);
                     numberOfDaysEditText.setText("" + mEditPattern.length());
 
                     mActiveCheckBox.setActivated(mEditPattern.getState() != Pattern.VISIBLE);
-                    mAcrchiveCheckBox.setActivated(mEditPattern.getState() == Pattern.VISIBLE);
+                    mArchiveCheckBox.setActivated(mEditPattern.getState() == Pattern.VISIBLE);
+
+                    adapter.update(mEditPattern.getLabels());
                 }
             }
         });
@@ -70,8 +73,10 @@ public class PatternEditorFragment extends Fragment {
         patternNameEditText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
+                Log.d(TAG, "onFocusChange: patternNameEditText: " + hasFocus);
                 if (!hasFocus) {
                     mEditPattern.setName(patternNameEditText.getText().toString());
+                    mViewModel.setEditPattern(mEditPattern);
                 }
             }
         });
@@ -82,7 +87,6 @@ public class PatternEditorFragment extends Fragment {
                 if (!hasFocus) {
                     try {
                         LocalDate startDate = LocalDate.parse(startDateEditText.getText().toString(), DateTimeFormat.forPattern("MM/dd/yy"));
-                        Log.d(TAG, "onFocusChange: " + startDate);
                         mEditPattern.updateStartDate(startDate);
                         mViewModel.setEditPattern(mEditPattern);
                     } catch (Exception e) {
@@ -156,7 +160,7 @@ public class PatternEditorFragment extends Fragment {
             }
         });
 
-        mAcrchiveCheckBox.setOnClickListener(new View.OnClickListener() {
+        mArchiveCheckBox.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 onCheckBoxesClick();
@@ -193,6 +197,8 @@ public class PatternEditorFragment extends Fragment {
                         } else {
                             mEditPattern.addLabel(labelEditText.getText().toString());
                         }
+
+                        mViewModel.setEditPattern(mEditPattern);
                     }
                 });
 
@@ -211,6 +217,8 @@ public class PatternEditorFragment extends Fragment {
                             mEditPattern.removeLabel(position);
                         }
                     });
+
+                    mViewModel.setEditPattern(mEditPattern);
                 }
 
                 dialogMenu.show();
@@ -219,7 +227,7 @@ public class PatternEditorFragment extends Fragment {
     }
 
     private void onCheckBoxesClick() {
-        if (mAcrchiveCheckBox.isChecked()) {
+        if (mArchiveCheckBox.isChecked()) {
             mActiveCheckBox.setChecked(true);
             mEditPattern.setState(Pattern.ARCHIVED);
         } else if (mActiveCheckBox.isChecked()) {

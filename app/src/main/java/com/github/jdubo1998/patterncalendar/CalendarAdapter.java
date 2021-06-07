@@ -23,10 +23,6 @@ public class CalendarAdapter extends BaseAdapter {
     private int mEditPatternStartDate = -1;
     private int mEditPatternLength = -1;
 
-//    public CalendarAdapter(int[] dayOfMonths, String[] icons, int[] colors, int todayDayOfMonth) {
-//        updateMonth(dayOfMonths, icons, colors, todayDayOfMonth);
-//    }
-
     public int getCount() {return 42;}
 
     public Object getItem(int position) {return null;}

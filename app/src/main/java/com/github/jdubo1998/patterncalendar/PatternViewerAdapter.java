@@ -1,6 +1,7 @@
 package com.github.jdubo1998.patterncalendar;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,7 +21,7 @@ public class PatternViewerAdapter extends BaseAdapter {
 
     @Override
     public int getCount() {
-        return mNames.length;
+        return mNames.length + 1;
     }
 
     @Override
@@ -47,10 +48,16 @@ public class PatternViewerAdapter extends BaseAdapter {
         TextView patternLabelText = convertView.findViewById(R.id.patternlabel_text);
         TextView patternValueText = convertView.findViewById(R.id.patternvalue_text);
 
-        patternLabelText.setText(mNames[position]);
-        patternValueText.setText(mLabels[position]);
-        patternLabelText.setTextColor(mColors[position]);
-        patternValueText.setTextColor(mColors[position]);
+        if (position < mNames.length) {
+            patternLabelText.setText(mNames[position]);
+            patternValueText.setText(mLabels[position]);
+            patternLabelText.setTextColor(mColors[position]);
+            patternValueText.setTextColor(mColors[position]);
+        } else {
+            patternLabelText.setText("[+] Pattern");
+            patternValueText.setText("");
+            patternLabelText.setTextColor(0xFF707070);
+        }
 
         return convertView;
     }

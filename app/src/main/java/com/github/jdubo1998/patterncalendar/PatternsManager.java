@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 public class PatternsManager {
-    private static final ArrayList<Pattern> patterns = new ArrayList<>();
+    private static final ArrayList<Pattern> mPatterns = new ArrayList<>();
     private static LocalDate mFirstDate;
     public static int delta_firstDate_today;
     private static String mRevertCode;
@@ -19,7 +19,7 @@ public class PatternsManager {
     private PatternsManager() {}
 
     public static void parseCode(String patternCodes) {
-        patterns.clear();
+        mPatterns.clear();
 
         LocalDate today = LocalDate.now();
         int offset = (today.getDayOfWeek() - (today.getDayOfMonth()%7)+8)%7 - 1;
@@ -33,16 +33,16 @@ public class PatternsManager {
     }
 
     public static void addPattern(String patternCode, LocalDate firstDate) {
-        patterns.add(new Pattern(patterns.size(), patternCode, firstDate));
+        mPatterns.add(new Pattern(mPatterns.size(), patternCode, firstDate));
     }
 
     public static Pattern getPattern(int index) {
-        mRevertCode = patterns.get(index).generateCode();
-        return patterns.get(index);
+        mRevertCode = mPatterns.get(index).generateCode();
+        return mPatterns.get(index);
     }
 
     public static Pattern getPattern(String name) {
-        for (Pattern pattern : patterns) {
+        for (Pattern pattern : mPatterns) {
             if (pattern.mName.equals(name)) {
                 return pattern;
             }
@@ -63,8 +63,8 @@ public class PatternsManager {
             StringBuilder icon = new StringBuilder();
 
             for (int i = 0; i < 6; i++) {
-                if (i < patterns.size() && (patterns.get(i).mName.equals(name) || name.isEmpty()) && patterns.get(i).getState() == Pattern.VISIBLE) {
-                    icon.append(patterns.get(i).getIcon(j));
+                if (i < mPatterns.size() && (mPatterns.get(i).mName.equals(name) || name.isEmpty()) && mPatterns.get(i).getState() == Pattern.VISIBLE) {
+                    icon.append(mPatterns.get(i).getIcon(j));
                 } else {
                     icon.append(' ');
                 }
@@ -89,9 +89,9 @@ public class PatternsManager {
             Arrays.fill(iconList, ' ');
             int index = 0;
 
-            for (int i = 0; i < patterns.size(); i++) {
-                if (index < 6 && (patterns.get(i).mName.equals(name) || name == null) && patterns.get(i).getState() == Pattern.VISIBLE) {
-                    iconList[index] = patterns.get(i).getIcon(j);
+            for (int i = 0; i < mPatterns.size(); i++) {
+                if (index < 6 && (mPatterns.get(i).mName.equals(name) || name == null) && mPatterns.get(i).getState() == Pattern.VISIBLE) {
+                    iconList[index] = mPatterns.get(i).getIcon(j);
                     index++;
                 }
             }
@@ -103,7 +103,7 @@ public class PatternsManager {
     }
 
     public static void changeFirstDates(LocalDate firstDate) {
-        for (Pattern pattern : patterns) {
+        for (Pattern pattern : mPatterns) {
             pattern.updateFirstDate(firstDate);
         }
     }
@@ -115,13 +115,21 @@ public class PatternsManager {
 
     /* Returns the labels for the day where offset is the days after firstDate. */
     public static String[] getLabels(int offset) {
-        String[] labels = new String[patterns.size()];
+        String[] labels = new String[mPatterns.size()];
 
         for (int i = 0; i < labels.length; i++) {
-            labels[i] = patterns.get(i).getLabel(offset);
+            labels[i] = mPatterns.get(i).getLabel(offset);
         }
 
         return labels;
+    }
+
+    public static void setState(int index, int state) {
+        mPatterns.get(index).setState(state);
+    }
+
+    public static int getState(int index) {
+        return mPatterns.get(index).getState();
     }
 
     public static int[] getColors() {
@@ -129,13 +137,13 @@ public class PatternsManager {
     }
 
     public static int[] getColors(String name) {
-        int[] colors = new int[patterns.size()];
+        int[] colors = new int[mPatterns.size()];
 
         for (int i = 0; i < colors.length; i++) {
             if (name == null) {
-                colors[i] = patterns.get(i).getColor();
-            } else if (patterns.get(i).name().equals(name)) {
-                colors[0] = patterns.get(i).getColor();
+                colors[i] = mPatterns.get(i).getColor();
+            } else if (mPatterns.get(i).name().equals(name)) {
+                colors[0] = mPatterns.get(i).getColor();
             } else {
                 colors[i] = Color.parseColor("#000000");
             }
@@ -145,25 +153,39 @@ public class PatternsManager {
     }
 
     public static String[] getNames() {
-        String[] names = new String[patterns.size()];
+        String[] names = new String[mPatterns.size()];
 
         for (int i = 0; i < names.length; i++) {
-            names[i] = patterns.get(i).mName;
+            names[i] = mPatterns.get(i).mName;
         }
 
         return names;
     }
 
+    public static void addPattern(Pattern pattern) {
+        mRevertCode = "null";
+        mPatterns.add(pattern);
+    }
+
     public static void revertEditPattern(Pattern editPattern) {
+        if (mRevertCode.equals("null")) { // TODO: Use better way to check if pattern is a new pattern.
+            mPatterns.remove(mPatterns.size()-1);
+            return;
+        }
+
         LocalDate today = LocalDate.now();
         int offset = (today.getDayOfWeek() - (today.getDayOfMonth()%7)+8)%7 - 1;
         LocalDate firstDate = today.minusDays(today.getDayOfMonth() + offset); // Date of first day in last month.
 
-        for (int i = 0; i < patterns.size(); i++) {
-            if (patterns.get(i).mID == editPattern.mID) {
-                patterns.set(i, new Pattern(editPattern.mID, mRevertCode, firstDate));
+        for (int i = 0; i < mPatterns.size(); i++) {
+            if (mPatterns.get(i).mID == editPattern.mID) {
+                mPatterns.set(i, new Pattern(editPattern.mID, mRevertCode, firstDate));
             }
         }
+    }
+
+    public static void deletePattern(int index) {
+        mPatterns.remove(index);
     }
 }
 
@@ -173,7 +195,7 @@ public class PatternsManager {
  *
  * @author J.B. DuBois
  */
-class Pattern implements Cloneable {
+class Pattern {
     public static final int VISIBLE = 0x00000000;
     public static final int INVISIBLE = 0x00000001;
     public static final int ARCHIVED = 0x00000002;
@@ -210,12 +232,29 @@ class Pattern implements Cloneable {
 //        delta_startDate_today = Days.daysBetween(mStartDate, today).getDays();
 //    }
 
+    public Pattern(int id) {
+        LocalDate today = LocalDate.now();
+        int offset = (today.getDayOfWeek() - (today.getDayOfMonth()%7)+8)%7 - 1;
+        LocalDate firstDate = today.minusDays(today.getDayOfMonth() + offset); // Date of first day in last month.
+
+        mID = id;
+        mName = "";
+        mPattern = new ArrayList<>();
+        mLabels = new ArrayList<>();
+        mIcons = new ArrayList<>();
+        mColor = 0xFF000000;
+        mStartDate = LocalDate.now();
+        mState = 0;
+
+        mDelta_firstDate_startDate = Days.daysBetween(firstDate, mStartDate).getDays();
+    }
+
     public Pattern(int id, String patternCode, LocalDate firstDate) {
         String[] attr = patternCode.split(";;");
 
         mID = id;
         mName = attr[0]; // Gets the name of the pattern.
-        String INTEGERPATTERN = attr[1]; // Gets the integer pattern in string form.
+        String Pattern = attr[1]; // Gets the integer pattern in string form.
         mLabels = new ArrayList<>(Arrays.asList(attr[2].split(";"))); // Gets the list of labels used.
         String[] icons = attr[3].split(";"); // Gets the list of icons used.
         mColor = Color.parseColor("#"+attr[4]); // Gets the color.
@@ -228,8 +267,8 @@ class Pattern implements Cloneable {
 
         /* Converts the integer pattern into an array. */
         mPattern = new ArrayList<>();
-        for (int i = 0; i < INTEGERPATTERN.length(); i++) {
-            mPattern.add(Integer.parseInt(""+INTEGERPATTERN.charAt(i)));
+        for (int i = 0; i < Pattern.length(); i++) {
+            mPattern.add(Integer.parseInt(""+Pattern.charAt(i)));
         }
 
         mDelta_firstDate_startDate = Days.daysBetween(firstDate, mStartDate).getDays();
@@ -271,7 +310,11 @@ class Pattern implements Cloneable {
         int index;
 
         if (offset >= mDelta_firstDate_startDate) {
-            index = mPattern.get((offset- mDelta_firstDate_startDate) % mPattern.size());
+            if (mPattern.size() > 0 && mLabels.size() > 0) {
+                index = mPattern.get((offset- mDelta_firstDate_startDate) % mPattern.size());
+            } else {
+                return null;
+            }
 
             return mLabels.get(index);
         }
@@ -288,7 +331,9 @@ class Pattern implements Cloneable {
     }
 
     public void cyclePatternIcon(int index) {
-        mPattern.set(index, (mPattern.get(index) + 1) % mIcons.size());
+        if (mIcons.size() > 0) {
+            mPattern.set(index, (mPattern.get(index) + 1) % mIcons.size());
+        }
     }
 
     /* Gets the icon referenced at the offset from the firstDate. */
@@ -296,7 +341,11 @@ class Pattern implements Cloneable {
         int index;
 
         if (offset >= mDelta_firstDate_startDate) {
-            index = mPattern.get((offset- mDelta_firstDate_startDate) % mPattern.size());
+            if (mPattern.size() > 0 && mIcons.size() > 0) {
+                index = mPattern.get((offset - mDelta_firstDate_startDate) % mPattern.size());
+            } else {
+                return ' ';
+            }
 
             return mIcons.get(index);
         }
@@ -324,7 +373,9 @@ class Pattern implements Cloneable {
         mLabels.set(index, label);
 
         if (label.equals("Yes")) { // TODO: Use a better way of setting default icons.
-            mIcons.set(index, mName.charAt(0));
+            if (!mName.isEmpty()) {
+                mIcons.set(index, mName.charAt(0));
+            }
         } else if (label.equals("No")) {
             mIcons.set(index, ' ');
         } else {
@@ -336,7 +387,9 @@ class Pattern implements Cloneable {
         mLabels.add(label);
 
         if (label.equals("Yes")) { // TODO: Use a better way of setting default icons.
-            mIcons.add(mName.charAt(0));
+            if (!mName.isEmpty()) {
+                mIcons.add(mName.charAt(0));
+            }
         } else if (label.equals("No")) {
             mIcons.add(' ');
         } else {

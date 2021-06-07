@@ -64,19 +64,20 @@ public class CalendarFragment extends Fragment {
         mViewModel.getEditPattern().observe(getViewLifecycleOwner(), new Observer<Pattern>() {
             @Override
             public void onChanged(Pattern pattern) {
+                /* Not in edit mode. */
                 if (pattern == null) {
-                    if (!Objects.requireNonNull(mViewModel.getSave().getValue())) {
-                        Log.d(TAG, "onChanged: Revert");
-                        PatternsManager.revertEditPattern(mEditPattern);
+                    if (mViewModel.getSave().getValue() != null) {
+                        if (!mViewModel.getSave().getValue()) {
+                            PatternsManager.revertEditPattern(mEditPattern);
+                        }
+
+                        nextMonth.setVisibility(View.VISIBLE);
+                        prevMonth.setVisibility(View.VISIBLE);
+
+                        mEditPattern = null;
+                        mDate = LocalDate.now();
                     }
-
-                    mEditPattern = null;
-
-                    nextMonth.setVisibility(View.VISIBLE);
-                    prevMonth.setVisibility(View.VISIBLE);
-
-                    mEditPattern = null;
-                    mDate = LocalDate.now();
+                /* In edit mode. */
                 } else {
                     nextMonth.setVisibility(View.INVISIBLE);
                     prevMonth.setVisibility(View.INVISIBLE);
