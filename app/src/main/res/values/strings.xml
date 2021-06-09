@@ -17,4 +17,6 @@
     <string name="inc_btn">+</string>
     <string name="dec_btn">-</string>
     <string name="numDays_label">Number of Days: </string>
+
+    <string name="int_placeholder">%d</string>
 </resources>

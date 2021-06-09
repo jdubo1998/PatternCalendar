@@ -3,6 +3,7 @@ package com.github.jdubo1998.patterncalendar;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Toast;
@@ -15,6 +16,8 @@ import androidx.lifecycle.ViewModelProvider;
 
 public class MainActivity extends AppCompatActivity {
     public static final String TAG = MainActivity.class.getSimpleName();
+    public static final String SAVE_KEY = "com.github.jdubo1998.patterncalendar.savekey";
+    private SharedPreferences preferences;
     private long backPressTimer;
     private SharedViewModel mViewModel;
     private boolean inEditMode;
@@ -27,14 +30,12 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main_layout);
-        Log.d(TAG, "onCreate: onCreate");
 
-        String drink_s = "Drink;;0000010;;No;Yes;; ;D;;805140;;06/07/20;;0";
-        String workout_s = "Workout;;2340410;;None;Abs;Upper Body;Bike;Full Body;; ;A;U;B;F;;00804f;;04/04/21;;0";
-        String applock_s = "Applock;;1010010;;No;Yes;; ;A;;EBA000;;06/07/20;;0";
-        String cigar_s = "Cigar;;00000100000000;;No;Yes;; ;C;;803221;;04/11/21;;0";
-        String ganja_s = "Chill;;01000001000100;;No;Yes;; ;C;;00800b;;04/04/21;;0";
-        PatternsManager.parseCode(drink_s + ";;;" + workout_s + ";;;"  + applock_s + ";;;"  + cigar_s + ";;;"  + ganja_s);
+        if (preferences == null) {
+            preferences = getBaseContext().getSharedPreferences("com.github.jdubo1998.phase15tool", Context.MODE_PRIVATE);
+        }
+
+        loadSharedPreferences();
 
         mViewModel = new ViewModelProvider(this).get(SharedViewModel.class);
 
@@ -68,10 +69,19 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void saveSharedPreferences() {
-
+        Log.d(TAG, "saveSharedPreferences: " + PatternsManager.generateCode());
+        preferences.edit().putString(SAVE_KEY, PatternsManager.generateCode()).apply();
     }
 
     public void loadSharedPreferences() {
+//        String drink_s = "Drink;;0000010;;No;Yes;; ;D;;805140;;06/07/20;;0";
+//        String workout_s = "Workout;;2340410;;None;Abs;Upper Body;Bike;Full Body;; ;A;U;B;F;;00804f;;04/04/21;;0";
+//        String applock_s = "Applock;;1010010;;No;Yes;; ;A;;EBA000;;06/07/20;;0";
+//        String cigar_s = "Cigar;;00000100000000;;No;Yes;; ;C;;803221;;04/11/21;;0";
+//        String ganja_s = "Chill;;01000001000100;;No;Yes;; ;C;;00800b;;04/04/21;;0";
+//        PatternsManager.parseCode(drink_s + ";;;" + workout_s + ";;;"  + applock_s + ";;;"  + cigar_s + ";;;"  + ganja_s);
+
+        PatternsManager.parseCode(preferences.getString(SAVE_KEY, ""));
     }
 
     @Override

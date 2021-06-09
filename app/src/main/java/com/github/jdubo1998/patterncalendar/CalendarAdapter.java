@@ -8,20 +8,16 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 
+import java.util.Locale;
+
 public class CalendarAdapter extends BaseAdapter {
     private LayoutInflater inflater;
 
-    private int mToday_dayOfMonth;
     private int mTarget = -1;
     private int[] mDaysOfMonth;
     private String[] mIcons;
     private int[] mColors;
-    private boolean targetMonth = false;
     private int[] mParams;
-
-//    private boolean editMode = false;
-    private int mEditPatternStartDate = -1;
-    private int mEditPatternLength = -1;
 
     public int getCount() {return 42;}
 
@@ -67,7 +63,9 @@ public class CalendarAdapter extends BaseAdapter {
         }
 
         for (int i = 0; i < 6; i++) {
-            if (mDaysOfMonth[position] >= mEditPatternStartDate) {
+            //    private boolean editMode = false;
+            int editPatternStartDate = -1;
+            if (mDaysOfMonth[position] >= editPatternStartDate) {
                 ptrn_icons[i].setText(Character.valueOf(mIcons[position].charAt(i)).toString());
             } else {
                 ptrn_icons[i].setText(" ");
@@ -78,12 +76,8 @@ public class CalendarAdapter extends BaseAdapter {
             }
         }
 
-        calendar_day.setText(String.format("%d", mDaysOfMonth[position]));
+        calendar_day.setText(convertView.getResources().getString(R.string.int_placeholder, mDaysOfMonth[position]));
         return convertView;
-    }
-
-    public void updateTarget (int target) {
-        mTarget = target;
     }
 
     public void updatePatterns(String[] icons, int[] colors) {

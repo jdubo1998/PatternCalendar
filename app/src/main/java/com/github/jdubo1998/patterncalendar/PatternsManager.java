@@ -21,6 +21,10 @@ public class PatternsManager {
     public static void parseCode(String patternCodes) {
         mPatterns.clear();
 
+        if (patternCodes == null || patternCodes.equals("")) {
+            return;
+        }
+
         LocalDate today = LocalDate.now();
         int offset = (today.getDayOfWeek() - (today.getDayOfMonth()%7)+8)%7 - 1;
         LocalDate firstDate = today.minusDays(today.getDayOfMonth() + offset); // Date of first day in last month.
@@ -186,6 +190,16 @@ public class PatternsManager {
 
     public static void deletePattern(int index) {
         mPatterns.remove(index);
+    }
+
+    public static String generateCode() {
+        StringBuilder code = new StringBuilder();
+
+        for (Pattern pattern : mPatterns) {
+            code.append(pattern.generateCode()).append(";;;");
+        }
+
+        return code.toString();
     }
 }
 

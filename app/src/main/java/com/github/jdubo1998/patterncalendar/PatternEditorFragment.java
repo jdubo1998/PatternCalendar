@@ -60,7 +60,7 @@ public class PatternEditorFragment extends Fragment {
                 if (mEditPattern != null) {
                     startDateEditText.setText(mEditPattern.startDate().toString("MM/dd/yy"));
                     patternNameEditText.setText(mEditPattern.mName);
-                    numberOfDaysEditText.setText("" + mEditPattern.length());
+                    numberOfDaysEditText.setText(getString(R.string.int_placeholder, mEditPattern.length()));
 
                     mActiveCheckBox.setActivated(mEditPattern.getState() != Pattern.VISIBLE);
                     mArchiveCheckBox.setActivated(mEditPattern.getState() == Pattern.VISIBLE);
@@ -72,7 +72,7 @@ public class PatternEditorFragment extends Fragment {
 
         patternNameEditText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
-            public void onFocusChange(View v, boolean hasFocus) {
+            public void onFocusChange(View v, boolean hasFocus) { // TODO: Change how to handle this.
                 Log.d(TAG, "onFocusChange: patternNameEditText: " + hasFocus);
                 if (!hasFocus) {
                     mEditPattern.setName(patternNameEditText.getText().toString());
@@ -83,7 +83,7 @@ public class PatternEditorFragment extends Fragment {
 
         startDateEditText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
-            public void onFocusChange(View v, boolean hasFocus) {
+            public void onFocusChange(View v, boolean hasFocus) { // TODO: Change how to handle this.
                 if (!hasFocus) {
                     try {
                         LocalDate startDate = LocalDate.parse(startDateEditText.getText().toString(), DateTimeFormat.forPattern("MM/dd/yy"));
@@ -137,7 +137,7 @@ public class PatternEditorFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 mEditPattern.incrementLength();
-                numberOfDaysEditText.setText("" + mEditPattern.length());
+                numberOfDaysEditText.setText(getString(R.string.int_placeholder, mEditPattern.length()));
                 mViewModel.setEditPattern(mEditPattern);
             }
         });
@@ -147,7 +147,7 @@ public class PatternEditorFragment extends Fragment {
             public void onClick(View v) {
                 if (mEditPattern.length() > 0) {
                     mEditPattern.decrementLength();
-                    numberOfDaysEditText.setText("" + mEditPattern.length());
+                    numberOfDaysEditText.setText(getString(R.string.int_placeholder, mEditPattern.length()));
                     mViewModel.setEditPattern(mEditPattern);
                 }
             }
