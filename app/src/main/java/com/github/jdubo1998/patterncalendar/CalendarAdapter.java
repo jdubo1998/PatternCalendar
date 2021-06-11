@@ -1,17 +1,15 @@
 package com.github.jdubo1998.patterncalendar;
 
 import android.content.Context;
-import android.graphics.Color;
+import android.content.res.Resources;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 
-import java.util.Locale;
-
 public class CalendarAdapter extends BaseAdapter {
-    private LayoutInflater inflater;
+    private LayoutInflater mInflater;
 
     private int mTarget = -1;
     private int[] mDaysOfMonth;
@@ -26,14 +24,16 @@ public class CalendarAdapter extends BaseAdapter {
     public long getItemId(int position) {return 0;}
 
     public View getView(int position, View convertView, ViewGroup parent) {
-        if (inflater == null) {
-            inflater = (LayoutInflater) parent.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        if (mInflater == null) {
+            mInflater = (LayoutInflater) parent.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         }
 
         if (convertView == null) {
-            assert inflater != null;
-            convertView = inflater.inflate(R.layout.calendardate_item, parent, false);
+            assert mInflater != null;
+            convertView = mInflater.inflate(R.layout.calendardate_item, parent, false);
         }
+
+        Resources resources = parent.getResources();
 
         TextView[] ptrn_icons = {convertView.findViewById(R.id.ptrn0_icon), convertView.findViewById(R.id.ptrn1_icon), convertView.findViewById(R.id.ptrn2_icon),
                 convertView.findViewById(R.id.ptrn3_icon), convertView.findViewById(R.id.ptrn4_icon), convertView.findViewById(R.id.ptrn5_icon)};
@@ -44,27 +44,27 @@ public class CalendarAdapter extends BaseAdapter {
         /* Edit Mode */
         if (mParams[0] == 1) {
             if (mParams[1] <= position && position <= mParams[2]) {
-                calendar_day.setTextColor(Color.rgb(0, 0, 0)); // Dates inside the target month are colored black.
+                calendar_day.setTextColor(resources.getColor(R.color.primaryDate)); // Dates inside the target month are colored black.
             } else {
-                calendar_day.setTextColor(Color.rgb(150, 150, 150)); // Dates outside of the target month are colored gray.
+                calendar_day.setTextColor(resources.getColor(R.color.secondaryDate)); // Dates outside of the target month are colored gray.
             }
 
         /* Pattern Viewer Mode */
         } else {
             if (position == mParams[3]) {
-                calendar_day.setTextColor(Color.rgb(255, 50, 50)); // Date of today is colored red.
+                calendar_day.setTextColor(resources.getColor(R.color.today)); // Date of today is colored red.
             } else if (position == mTarget) {
-                calendar_day.setTextColor(Color.rgb(50, 50, 255)); // Target day and target month is colored blue.
+                calendar_day.setTextColor(resources.getColor(R.color.target)); // Target day and target month is colored blue.
             } else if (mParams[1] <= position && position <= mParams[2]) {
-                calendar_day.setTextColor(Color.rgb(0, 0, 0)); // Dates inside the target month are colored black.
+                calendar_day.setTextColor(resources.getColor(R.color.primaryDate)); // Dates inside the target month are colored black.
             } else {
-                calendar_day.setTextColor(Color.rgb(150, 150, 150)); // Dates outside of the target month are colored gray.
+                calendar_day.setTextColor(resources.getColor(R.color.secondaryDate)); // Dates outside of the target month are colored gray.
             }
         }
 
         for (int i = 0; i < 6; i++) {
-            //    private boolean editMode = false;
-            int editPatternStartDate = -1;
+            int editPatternStartDate = -1; // TODO: What is this variable used for..
+
             if (mDaysOfMonth[position] >= editPatternStartDate) {
                 ptrn_icons[i].setText(Character.valueOf(mIcons[position].charAt(i)).toString());
             } else {
@@ -76,7 +76,7 @@ public class CalendarAdapter extends BaseAdapter {
             }
         }
 
-        calendar_day.setText(convertView.getResources().getString(R.string.int_placeholder, mDaysOfMonth[position]));
+        calendar_day.setText(resources.getString(R.string.int_placeholder, mDaysOfMonth[position]));
         return convertView;
     }
 
@@ -88,6 +88,12 @@ public class CalendarAdapter extends BaseAdapter {
     public void updateCalendar(int[] dayOfMonth, int[] params) {
         mDaysOfMonth = dayOfMonth;
         mParams = params;
+
+        notifyDataSetChanged();
+    }
+
+    public void updateTarget(int target) {
+        mTarget = target;
 
         notifyDataSetChanged();
     }

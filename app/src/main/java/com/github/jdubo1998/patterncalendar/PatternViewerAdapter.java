@@ -1,7 +1,6 @@
 package com.github.jdubo1998.patterncalendar;
 
 import android.content.Context;
-import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -54,7 +53,7 @@ public class PatternViewerAdapter extends BaseAdapter {
             patternLabelText.setTextColor(mColors[position]);
             patternValueText.setTextColor(mColors[position]);
         } else {
-            patternLabelText.setText("[+] Pattern");
+            patternLabelText.setText(R.string.add_pattern_button);
             patternValueText.setText("");
             patternLabelText.setTextColor(0xFF707070);
         }

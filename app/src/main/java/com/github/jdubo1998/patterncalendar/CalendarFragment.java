@@ -17,14 +17,12 @@ import org.joda.time.DateTime;
 import org.joda.time.Days;
 import org.joda.time.LocalDate;
 
-import java.util.Objects;
-
 public class CalendarFragment extends Fragment {
     public static final String TAG = CalendarFragment.class.getSimpleName();
     TextView monthYearText;
     private LocalDate mDate;
     private SharedViewModel mViewModel;
-    private static int[] mDaysOfMonth = new int[42];
+    private static final int[] mDaysOfMonth = new int[42];
     private CalendarAdapter mAdapter;
     int[] mParams;
 
@@ -42,6 +40,7 @@ public class CalendarFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        Log.d(TAG, "onViewCreated");
 
         mViewModel = new ViewModelProvider(requireActivity()).get(SharedViewModel.class);
 
@@ -95,6 +94,7 @@ public class CalendarFragment extends Fragment {
             public void onClick(View v) {
                 mDate = mDate.plusMonths(1);
                 updateCalendar(mDate);
+                mAdapter.updateTarget(-1);
             }
         });
 
@@ -103,6 +103,7 @@ public class CalendarFragment extends Fragment {
             public void onClick(View v) {
                 mDate = mDate.minusMonths(1);
                 updateCalendar(mDate);
+                mAdapter.updateTarget(-1);
             }
         });
 
@@ -116,6 +117,7 @@ public class CalendarFragment extends Fragment {
 
                     mViewModel.setEditPattern(mEditPattern);
                 } else {
+                    mAdapter.updateTarget(position);
                     mViewModel.setDayOffset(position);
                 }
             }

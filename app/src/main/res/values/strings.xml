@@ -1,13 +1,13 @@
 <resources>
     <string name="app_name">PatternCalendar</string>
 
-    <string name="sunday_label">SUN</string>
-    <string name="monday_label">MON</string>
-    <string name="tuesday_label">TUE</string>
-    <string name="wednesday_label">WED</string>
-    <string name="thursday_label">THU</string>
-    <string name="friday_label">FRI</string>
-    <string name="saturday_label">SAT</string>
+    <string name="sunday">SUN</string>
+    <string name="monday">MON</string>
+    <string name="tuesday">TUE</string>
+    <string name="wednesday">WED</string>
+    <string name="thursday">THU</string>
+    <string name="friday">FRI</string>
+    <string name="saturday">SAT</string>
 
     <string name="prevMonth_contentDescription">Shows the previous month in the calendar.</string>
     <string name="nextMonth_contentDescription">Shows the next month in the calendar.</string>
@@ -16,7 +16,10 @@
 
     <string name="inc_btn">+</string>
     <string name="dec_btn">-</string>
-    <string name="numDays_label">Number of Days: </string>
+    <string name="numDays_label">Length: </string>
 
     <string name="int_placeholder">%d</string>
+
+    <string name="add_label_button">[+] Label</string>
+    <string name="add_pattern_button">[+] Pattern</string>
 </resources>

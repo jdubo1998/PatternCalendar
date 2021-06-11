@@ -1,14 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#aaaaaa</color>
+    <color name="colorPrimary">#ffffff</color>
     <color name="colorPrimaryDark">#333333</color>
-    <color name="colorAccent">#03DAC5</color>
+    <color name="colorAccent">#03dac5</color>
     <color name="background">#ffffff</color>
 
-<!--    <color name="focusedDate"></color>-->
-<!--    <color name="unfocusedDate"></color>-->
-
-    <color name="focusedDateDark">#ffffff</color>
-<!--    <color name="unfocusedDateDark">#</color>-->
-
+    <color name="today">#cc0000</color>
+    <color name="target">#009999</color>
+    <color name="primaryDate">#000000</color>
+    <color name="secondaryDate">#888888</color>
 </resources>

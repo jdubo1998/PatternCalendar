@@ -43,7 +43,7 @@ public class LabelsListAdapter extends BaseAdapter {
 
         TextView patternLabelText = convertView.findViewById(R.id.patternlabel_text);
         if (position == mLabels.length) {
-            patternLabelText.setText("[+] Add Label");
+            patternLabelText.setText(R.string.add_label_button);
         } else {
             patternLabelText.setText(mLabels[position]);
         }

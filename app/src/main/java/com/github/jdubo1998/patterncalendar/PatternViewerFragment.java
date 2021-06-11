@@ -1,6 +1,7 @@
 package com.github.jdubo1998.patterncalendar;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.ContextMenu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -28,6 +29,7 @@ public class PatternViewerFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        Log.d(TAG, "onViewCreated");
 
         mViewModel = new ViewModelProvider(requireActivity()).get(SharedViewModel.class);
 
@@ -70,28 +72,23 @@ public class PatternViewerFragment extends Fragment {
     public boolean onContextItemSelected(@NonNull MenuItem item) {
         AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
 
-        switch (item.getItemId()) {
-            case R.id.active_action:
-                if (PatternsManager.getState(info.position) == Pattern.VISIBLE) {
-                    PatternsManager.setState(info.position, Pattern.INVISIBLE);
-                } else {
-                    PatternsManager.setState(info.position, Pattern.VISIBLE);
-                }
+        if (item.getItemId() == R.id.active_action) {
+            if (PatternsManager.getState(info.position) == Pattern.VISIBLE) {
+                PatternsManager.setState(info.position, Pattern.INVISIBLE);
+            } else {
+                PatternsManager.setState(info.position, Pattern.VISIBLE);
+            }
 
-                adapter.update(PatternsManager.getNames(), PatternsManager.getLabels(offset), PatternsManager.getColors());
-                mViewModel.setEditPattern(null); // TODO: Better way to update.
-//                Log.d(TAG, "onContextItemSelected: active_action");
-                break;
-            case R.id.edit_action:
-                mViewModel.setEditPattern(PatternsManager.getPattern(info.position));
-                break;
-            case R.id.delete_action:
-                PatternsManager.deletePattern(info.position);
-                adapter.update(PatternsManager.getNames(), PatternsManager.getLabels(offset), PatternsManager.getColors());
-                mViewModel.setEditPattern(null); // TODO: Better way to update.
-                break;
-            default:
-                return super.onContextItemSelected(item);
+            adapter.update(PatternsManager.getNames(), PatternsManager.getLabels(offset), PatternsManager.getColors());
+            mViewModel.setEditPattern(null); // TODO: Better way to update.
+
+        } else if (item.getItemId() == R.id.edit_action) {
+            mViewModel.setEditPattern(PatternsManager.getPattern(info.position));
+
+        } else if (item.getItemId() == R.id.delete_action) {
+            PatternsManager.removePattern(info.position);
+            adapter.update(PatternsManager.getNames(), PatternsManager.getLabels(offset), PatternsManager.getColors());
+            mViewModel.setEditPattern(null); // TODO: Better way to update.
         }
 
         return true;

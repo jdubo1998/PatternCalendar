@@ -102,6 +102,21 @@
             android:layout_width="40dp"
             android:layout_height="wrap_content"
             android:text="@string/inc_btn"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:textSize="14sp"
+            android:gravity="center"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="20dp"
+            android:text="Color:"/>
+
+        <FrameLayout
+            android:id="@+id/colorpicker_framelayout"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_gravity="center"/>
     </LinearLayout>
 
     <LinearLayout

@@ -1,7 +1,6 @@
 package com.github.jdubo1998.patterncalendar;
 
 import android.graphics.Color;
-import android.util.Log;
 
 import org.joda.time.Days;
 import org.joda.time.LocalDate;
@@ -12,7 +11,6 @@ import java.util.Arrays;
 
 public class PatternsManager {
     private static final ArrayList<Pattern> mPatterns = new ArrayList<>();
-    private static LocalDate mFirstDate;
     public static int delta_firstDate_today;
     private static String mRevertCode;
 
@@ -36,9 +34,17 @@ public class PatternsManager {
         delta_firstDate_today = Days.daysBetween(firstDate, today).getDays();
     }
 
-    public static void addPattern(String patternCode, LocalDate firstDate) {
-        mPatterns.add(new Pattern(mPatterns.size(), patternCode, firstDate));
+    public static String generateCode() {
+        StringBuilder code = new StringBuilder();
+
+        for (Pattern pattern : mPatterns) {
+            code.append(pattern.generateCode()).append(";;;");
+        }
+
+        return code.toString();
     }
+
+    /* Pattern Methods */
 
     public static Pattern getPattern(int index) {
         mRevertCode = mPatterns.get(index).generateCode();
@@ -55,38 +61,59 @@ public class PatternsManager {
         return null;
     }
 
-    public static String[] getIcons() {
-        return getIcons("");
+    public static void addPattern(Pattern pattern) {
+        mRevertCode = "null";
+        mPatterns.add(pattern);
     }
 
-    /* Returns a string array of each icon for the given date. */
-    public static String[] getIcons(String name) {
-        String[] icons = new String[42];
+    public static void addPattern(String patternCode, LocalDate firstDate) {
+        mPatterns.add(new Pattern(mPatterns.size(), patternCode, firstDate));
+    }
 
-        for (int j = 0; j < icons.length; j++) {
-            StringBuilder icon = new StringBuilder();
+    public static void removePattern(int index) {
+        mPatterns.remove(index);
+    }
 
-            for (int i = 0; i < 6; i++) {
-                if (i < mPatterns.size() && (mPatterns.get(i).mName.equals(name) || name.isEmpty()) && mPatterns.get(i).getState() == Pattern.VISIBLE) {
-                    icon.append(mPatterns.get(i).getIcon(j));
-                } else {
-                    icon.append(' ');
-                }
-            }
-
-            icons[j] = icon.toString();
+    public static void revertEditPattern(Pattern editPattern) {
+        if (mRevertCode.equals("null")) { // TODO: Use better way to check if pattern is a new pattern.
+            mPatterns.remove(mPatterns.size()-1);
+            return;
         }
 
-        return icons;
+        LocalDate today = LocalDate.now();
+        int offset = (today.getDayOfWeek() - (today.getDayOfMonth()%7)+8)%7 - 1;
+        LocalDate firstDate = today.minusDays(today.getDayOfMonth() + offset); // Date of first day in last month.
+
+        for (int i = 0; i < mPatterns.size(); i++) {
+            if (mPatterns.get(i).mID == editPattern.mID) {
+                mPatterns.set(i, new Pattern(editPattern.mID, mRevertCode, firstDate));
+            }
+        }
     }
 
-    public static String[] getIcons(LocalDate firstDate) {
-        return getIcons(firstDate, null);
+    /* ---   Label Methods   --- */
+
+    /* Gets the label for today. */
+    public static String[] getLabels() {
+        return getLabels(delta_firstDate_today);
     }
+
+    /* Returns the labels for the day where offset is the days after firstDate. */
+    public static String[] getLabels(int offset) {
+        String[] labels = new String[mPatterns.size()];
+
+        for (int i = 0; i < labels.length; i++) {
+            labels[i] = mPatterns.get(i).getLabel(offset);
+        }
+
+        return labels;
+    }
+
+    /* ---   Icon Methods   --- */
 
     public static String[] getIcons(LocalDate firstDate, String name) {
         String[] icons = new String[42];
-        changeFirstDates(firstDate);
+        setFirstDates(firstDate);
 
         for (int j = 0; j < icons.length; j++) {
             char[] iconList = new char[6];
@@ -106,26 +133,12 @@ public class PatternsManager {
         return icons;
     }
 
-    public static void changeFirstDates(LocalDate firstDate) {
+    /* ---   Extra Methods   --- */
+
+    public static void setFirstDates(LocalDate firstDate) {
         for (Pattern pattern : mPatterns) {
             pattern.updateFirstDate(firstDate);
         }
-    }
-
-    /* Gets the label for today. */
-    public static String[] getLabels() {
-        return getLabels(delta_firstDate_today);
-    }
-
-    /* Returns the labels for the day where offset is the days after firstDate. */
-    public static String[] getLabels(int offset) {
-        String[] labels = new String[mPatterns.size()];
-
-        for (int i = 0; i < labels.length; i++) {
-            labels[i] = mPatterns.get(i).getLabel(offset);
-        }
-
-        return labels;
     }
 
     public static void setState(int index, int state) {
@@ -165,42 +178,6 @@ public class PatternsManager {
 
         return names;
     }
-
-    public static void addPattern(Pattern pattern) {
-        mRevertCode = "null";
-        mPatterns.add(pattern);
-    }
-
-    public static void revertEditPattern(Pattern editPattern) {
-        if (mRevertCode.equals("null")) { // TODO: Use better way to check if pattern is a new pattern.
-            mPatterns.remove(mPatterns.size()-1);
-            return;
-        }
-
-        LocalDate today = LocalDate.now();
-        int offset = (today.getDayOfWeek() - (today.getDayOfMonth()%7)+8)%7 - 1;
-        LocalDate firstDate = today.minusDays(today.getDayOfMonth() + offset); // Date of first day in last month.
-
-        for (int i = 0; i < mPatterns.size(); i++) {
-            if (mPatterns.get(i).mID == editPattern.mID) {
-                mPatterns.set(i, new Pattern(editPattern.mID, mRevertCode, firstDate));
-            }
-        }
-    }
-
-    public static void deletePattern(int index) {
-        mPatterns.remove(index);
-    }
-
-    public static String generateCode() {
-        StringBuilder code = new StringBuilder();
-
-        for (Pattern pattern : mPatterns) {
-            code.append(pattern.generateCode()).append(";;;");
-        }
-
-        return code.toString();
-    }
 }
 
 /**
@@ -217,34 +194,12 @@ class Pattern {
     public String mName;
     public final int mID;
     private int mState;
-    private ArrayList<Integer> mPattern; // TODO: Rename
-    private ArrayList<String> mLabels;
-    private ArrayList<Character> mIcons;
+    private final ArrayList<Integer> mPattern;
+    private final ArrayList<String> mLabels;
+    private final ArrayList<Character> mIcons;
     private int mColor;
     private LocalDate mStartDate;
-    private int delta_startDate_today; // daysBetween startDate and today.
     private int mDelta_firstDate_startDate; // daysBetween firstDate and startDate.
-
-//    public Pattern(int id, String patternCode) {
-//        String[] attr = patternCode.split(";;");
-//
-//        mID = id;
-//        mName = attr[0]; // Gets the name of the pattern.
-//        String INTEGERPATTERN = attr[1]; // Gets the integer pattern in string form.
-//        mLabels = new ArrayList<>(Arrays.asList(attr[2].split(";"))); // Gets the list of labels used.
-//        mColor = Color.parseColor("#"+attr[4]); // Gets the color.
-//        mStartDate = LocalDate.parse(attr[5], DateTimeFormat.forPattern("MM/dd/yy"));
-//        mState = Integer.parseInt(attr[6]);
-//
-//        /* Converts the integer pattern into an array. */
-//        this.mPattern = new ArrayList<>();
-//        for (int i = 0; i < INTEGERPATTERN.length(); i++) {
-//            this.mPattern.add(Integer.parseInt(""+INTEGERPATTERN.charAt(i)));
-//        }
-//
-//        LocalDate today = LocalDate.now();
-//        delta_startDate_today = Days.daysBetween(mStartDate, today).getDays();
-//    }
 
     public Pattern(int id) {
         LocalDate today = LocalDate.now();
@@ -288,35 +243,36 @@ class Pattern {
         mDelta_firstDate_startDate = Days.daysBetween(firstDate, mStartDate).getDays();
 
         LocalDate today = LocalDate.now();
-        delta_startDate_today = Days.daysBetween(mStartDate, today).getDays();
     }
 
-    public void updateFirstDate(LocalDate firstDate) {
-        mDelta_firstDate_startDate = Days.daysBetween(firstDate, mStartDate).getDays();
-    }
+    /* Returns the pattern code. */
+    public String generateCode() {
+        StringBuilder patternCode = new StringBuilder();
 
-    public LocalDate startDate() {
-        return mStartDate;
-    }
-
-    public void updateStartDate(LocalDate startDate) {
-        mStartDate = startDate;
-    }
-
-    public void setState(int state) {
-        mState = state;
-    }
-
-    public int getState() {
-        return mState;
-    }
-
-    public void setName(String name) {
-        mName = name;
-
-        if (mIcons.size() == 2) { // TODO: Use a better way of setting default icons.
-            mIcons.set(1, mName.charAt(0));
+        patternCode.append(mName).append(";;"); // NAME
+        for (int code : mPattern) { // CODE
+            patternCode.append(code);
         }
+        patternCode.append(";;");
+
+        for (String label : mLabels) { // LABELS
+            patternCode.append(label).append(";");
+        }
+
+        for (Character icon : mIcons) { // ICONS
+            patternCode.append(";").append(icon);
+        }
+        patternCode.append(";;").append(String.format("%06X", 0xFFFFFF & mColor)); // TODO: Remove Hex representation for color.
+        patternCode.append(";;").append(mStartDate.toString("MM/dd/yy"));
+        patternCode.append(";;").append(mState);
+
+        return patternCode.toString();
+    }
+
+    /* ---   Label Methods   --- */
+
+    public String[] getLabels() {
+        return mLabels.toArray(new String[0]);
     }
 
     /* Gets the label referenced at the offset from the firstDate. */
@@ -334,53 +290,6 @@ class Pattern {
         }
 
         return null;
-    }
-
-    public String name() {
-        return mName;
-    }
-
-    public int length() {
-        return mPattern.size();
-    }
-
-    public void cyclePatternIcon(int index) {
-        if (mIcons.size() > 0) {
-            mPattern.set(index, (mPattern.get(index) + 1) % mIcons.size());
-        }
-    }
-
-    /* Gets the icon referenced at the offset from the firstDate. */
-    public Character getIcon(int offset) { // TODO: Edit
-        int index;
-
-        if (offset >= mDelta_firstDate_startDate) {
-            if (mPattern.size() > 0 && mIcons.size() > 0) {
-                index = mPattern.get((offset - mDelta_firstDate_startDate) % mPattern.size());
-            } else {
-                return ' ';
-            }
-
-            return mIcons.get(index);
-        }
-
-        return ' ';
-    }
-
-    public void incrementLength() {
-        mPattern.add(0);
-    }
-
-    public void decrementLength() {
-        mPattern.remove(mPattern.size()-1);
-    }
-
-    public int getColor() {
-        return mColor;
-    }
-
-    public String[] getLabels() {
-        return mLabels.toArray(new String[0]);
     }
 
     public void setLabel(int index, String label) {
@@ -416,27 +325,82 @@ class Pattern {
         mIcons.remove(index);
     }
 
-    /* Returns the pattern code. */
-    public String generateCode() {
-        StringBuilder patternCode = new StringBuilder();
+    /* ---   Icon Methods   --- */
 
-        patternCode.append(mName).append(";;"); // NAME
-        for (int code : mPattern) { // CODE
-            patternCode.append(code);
+    /* Gets the icon referenced at the offset from the firstDate. */
+    public Character getIcon(int offset) {
+        int index;
+
+        if (offset >= mDelta_firstDate_startDate) {
+            if (mPattern.size() > 0 && mIcons.size() > 0) {
+                index = mPattern.get((offset - mDelta_firstDate_startDate) % mPattern.size());
+            } else {
+                return ' ';
+            }
+
+            return mIcons.get(index);
         }
-        patternCode.append(";;");
 
-        for (String label : mLabels) { // LABELS
-            patternCode.append(label).append(";");
+        return ' ';
+    }
+
+    /* ---   Extra Methods   --- */
+
+    public String name() {
+        return mName;
+    }
+
+    public void setName(String name) {
+        mName = name;
+
+        if (mIcons.size() == 2) { // TODO: Use a better way of setting default icons.
+            mIcons.set(1, mName.charAt(0));
         }
+    }
 
-        for (Character icon : mIcons) { // ICONS
-            patternCode.append(";").append(icon);
+    public void cyclePatternIcon(int index) {
+        if (mIcons.size() > 0) {
+            mPattern.set(index, (mPattern.get(index) + 1) % mIcons.size());
         }
-        patternCode.append(";;").append(String.format("%06X", 0xFFFFFF & mColor)); // TODO: Remove Hex representation for color.
-        patternCode.append(";;").append(mStartDate.toString("MM/dd/yy"));
-        patternCode.append(";;").append(mState);
+    }
 
-        return patternCode.toString();
+    public void incrementLength() {
+        mPattern.add(0);
+    }
+
+    public void decrementLength() {
+        mPattern.remove(mPattern.size()-1);
+    }
+
+    public int length() {
+        return mPattern.size();
+    }
+
+    public int getColor() {
+        return mColor;
+    }
+
+    public void setColor(int color) {
+        mColor = color;
+    }
+
+    public LocalDate startDate() {
+        return mStartDate;
+    }
+
+    public void updateStartDate(LocalDate startDate) {
+        mStartDate = startDate;
+    }
+
+    public void updateFirstDate(LocalDate firstDate) {
+        mDelta_firstDate_startDate = Days.daysBetween(firstDate, mStartDate).getDays();
+    }
+
+    public void setState(int state) {
+        mState = state;
+    }
+
+    public int getState() {
+        return mState;
     }
 }

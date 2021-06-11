@@ -2,6 +2,7 @@ package com.github.jdubo1998.patterncalendar;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -11,6 +12,7 @@ import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -18,6 +20,9 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
+
+import com.pes.androidmaterialcolorpickerdialog.ColorPicker;
+import com.pes.androidmaterialcolorpickerdialog.ColorPickerCallback;
 
 import org.joda.time.LocalDate;
 import org.joda.time.format.DateTimeFormat;
@@ -35,14 +40,17 @@ public class PatternEditorFragment extends Fragment {
 
     @Override
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
         mViewModel = new ViewModelProvider(requireActivity()).get(SharedViewModel.class);
+
+        Log.d(TAG, "onViewCreated");
 
         final EditText patternNameEditText = view.findViewById(R.id.patternname_edittext);
         final EditText startDateEditText = view.findViewById(R.id.startdate_edittext); // TODO: better method to get date.
         Button incrementDaysButton = view.findViewById(R.id.incrementdays_button);
         Button decrementDaysButton = view.findViewById(R.id.decrementdays_button);
         final EditText numberOfDaysEditText = view.findViewById(R.id.numberofdays_text);
-        // TODO: Add color changing functionality.
+        final FrameLayout colorPickerFrameLayout = view.findViewById(R.id.colorpicker_framelayout);
         mActiveCheckBox = view.findViewById(R.id.active_checkbox);
         mArchiveCheckBox = view.findViewById(R.id.archive_checkbox);
 
@@ -50,6 +58,19 @@ public class PatternEditorFragment extends Fragment {
         ListView labelsList = view.findViewById(R.id.labels_list);
         final LabelsListAdapter adapter = new LabelsListAdapter(mEditPattern.getLabels());
         labelsList.setAdapter(adapter);
+
+        final ColorPicker colorPicker = new ColorPicker(getActivity(), Color.alpha(mEditPattern.getColor()),
+                Color.red(mEditPattern.getColor()),
+                Color.green(mEditPattern.getColor()),
+                Color.blue(mEditPattern.getColor()));
+        colorPicker.enableAutoClose();
+        colorPicker.setCallback(new ColorPickerCallback() {
+            @Override
+            public void onColorChosen(int color) {
+                mEditPattern.setColor(color);
+                mViewModel.setEditPattern(mEditPattern);
+            }
+        });
 
         /* Attach observers and listeners. */
         mViewModel.getEditPattern().observe(getViewLifecycleOwner(), new Observer<Pattern>() {
@@ -61,6 +82,7 @@ public class PatternEditorFragment extends Fragment {
                     startDateEditText.setText(mEditPattern.startDate().toString("MM/dd/yy"));
                     patternNameEditText.setText(mEditPattern.mName);
                     numberOfDaysEditText.setText(getString(R.string.int_placeholder, mEditPattern.length()));
+                    colorPickerFrameLayout.setBackgroundColor(mEditPattern.getColor());
 
                     mActiveCheckBox.setActivated(mEditPattern.getState() != Pattern.VISIBLE);
                     mArchiveCheckBox.setActivated(mEditPattern.getState() == Pattern.VISIBLE);
@@ -149,6 +171,17 @@ public class PatternEditorFragment extends Fragment {
                     mEditPattern.decrementLength();
                     numberOfDaysEditText.setText(getString(R.string.int_placeholder, mEditPattern.length()));
                     mViewModel.setEditPattern(mEditPattern);
+                }
+            }
+        });
+
+        colorPickerFrameLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (colorPicker.isShowing()) {
+                    colorPicker.hide();
+                } else {
+                    colorPicker.show();
                 }
             }
         });
